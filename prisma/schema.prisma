@@ -1,0 +1,292 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id
+  email     String   @unique
+  name      String
+  status    String   @default("active")
+  roleId    String
+  role      Role     @relation(fields: [roleId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders        Order[]
+  tickets       Ticket[]
+  favorites     Favorite[]
+  notifications Notification[]
+  auditLogs     AuditLog[]
+  uploads       MediaAsset[]
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  name        String
+  slug        String           @unique
+  description String
+  color       String           @default("#c4a574")
+  isSystem    Boolean          @default(false)
+  users       User[]
+  permissions RolePermission[]
+}
+
+model RolePermission {
+  id       String @id @default(cuid())
+  roleId   String
+  role     Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  resource String
+  action   String
+
+  @@unique([roleId, resource, action])
+}
+
+model Product {
+  id         String           @id @default(cuid())
+  slug       String           @unique
+  name       String
+  kind       String
+  fabric     String
+  blurb      String
+  priceCents Int
+  imagePath  String?
+  status     String           @default("published")
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  variants   ProductVariant[]
+  favorites  Favorite[]
+}
+
+model ProductVariant {
+  id         String  @id @default(cuid())
+  productId  String
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  size       String
+  sku        String  @unique
+  inventory  Int     @default(0)
+  priceCents Int?
+}
+
+model Event {
+  id          String       @id @default(cuid())
+  date        DateTime
+  city        String
+  venue       String
+  support     String?
+  status      String       @default("on_sale")
+  published   Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  ticketTypes TicketType[]
+  tickets     Ticket[]
+}
+
+model TicketType {
+  id         String   @id @default(cuid())
+  eventId    String
+  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name       String
+  priceCents Int
+  inventory  Int      @default(0)
+  tickets    Ticket[]
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+  status          String      @default("pending")
+  totalCents      Int
+  stripeSessionId String?
+  createdAt       DateTime    @default(now())
+  items           OrderItem[]
+  tickets         Ticket[]
+}
+
+model OrderItem {
+  id           String  @id @default(cuid())
+  orderId      String
+  order        Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  kind         String
+  label        String
+  variantId    String?
+  ticketTypeId String?
+  qty          Int
+  unitCents    Int
+}
+
+model Ticket {
+  id           String     @id @default(cuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id])
+  orderId      String
+  order        Order      @relation(fields: [orderId], references: [id])
+  eventId      String
+  event        Event      @relation(fields: [eventId], references: [id])
+  ticketTypeId String
+  ticketType   TicketType @relation(fields: [ticketTypeId], references: [id])
+  code         String     @unique
+  createdAt    DateTime   @default(now())
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  resource  String
+  targetId  String?
+  meta      String?
+  createdAt DateTime @default(now())
+}
+
+model MediaAsset {
+  id         String   @id @default(cuid())
+  path       String
+  name       String
+  mime       String
+  size       Int
+  uploadedBy String
+  uploader   User     @relation(fields: [uploadedBy], references: [id])
+  createdAt  DateTime @default(now())
+}
+
+model SitePage {
+  id        String        @id @default(cuid())
+  slug      String        @unique
+  title     String
+  status    String        @default("draft")
+  updatedAt DateTime      @updatedAt
+  sections  PageSection[]
+}
+
+model PageSection {
+  id          String   @id @default(cuid())
+  pageId      String
+  page        SitePage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  sort        Int
+  type        String
+  heading     String?
+  body        String?
+  buttonLabel String?
+  buttonHref  String?
+  imagePath   String?
+  background  String?
+  published   Boolean  @default(true)
+}
+
+model SiteSetting {
+  key   String @id
+  value String
+}
+
+model Album {
+  id        String  @id @default(cuid())
+  slug      String  @unique
+  title     String
+  type      String
+  year      String
+  note      String
+  tone      String
+  duration  String
+  label     String
+  summary   String
+  lyrics    String
+  imagePath String?
+  recorded  String  @default("")
+  status    String  @default("published")
+  tracks    Track[]
+}
+
+model Track {
+  id       String  @id @default(cuid())
+  albumId  String
+  album    Album   @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  title    String
+  duration String
+  featured Boolean @default(false)
+  sort     Int     @default(0)
+}
+
+model NewsArticle {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  date      String
+  title     String
+  excerpt   String
+  body      String
+  status    String   @default("published")
+  createdAt DateTime @default(now())
+}
+
+model BandMember {
+  id     String @id @default(cuid())
+  name   String
+  role   String
+  mark   String
+  line      String
+  imagePath String?
+  sort      Int    @default(0)
+  status    String @default("published")
+}
+
+model Video {
+  id     String @id @default(cuid())
+  slug   String @unique
+  title  String
+  kind   String
+  year   String
+  length String
+  note      String
+  imagePath String?
+  embedUrl  String?
+  status    String  @default("published")
+}
+
+model Photo {
+  id      String @id @default(cuid())
+  caption String
+  place   String
+  path    String?
+  status  String @default("published")
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  body      String
+  createdAt DateTime @default(now())
+}
+
+model MailingSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}

@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-void: #070707;
+  --color-obsidian: #0d0d0d;
+  --color-charcoal: #161616;
+  --color-steel: #2c2c2c;
+  --color-iron: #3f3f3f;
+  --color-ash: #8c8884;
+  --color-mist: #b8b3ad;
+  --color-bone: #e8e2da;
+  --color-blood: #e11d26;
+  --color-ember: #ff2a33;
+  --color-crimson: #8f1218;
+  --font-display: "Cinzel", "Times New Roman", serif;
+  --font-body: "Outfit", ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-void);
+  color: var(--color-bone);
+  font-family: var(--font-outfit), var(--font-body);
+}
+
+.font-display {
+  font-family: var(--font-cinzel), var(--font-display);
+}
+
+::selection {
+  background: var(--color-blood);
+  color: var(--color-bone);
+}
+
+.noise {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.vignette {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  box-shadow: inset 0 0 180px 40px rgba(0, 0, 0, 0.72);
+}
+
+.hairline {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--color-blood) 55%, transparent),
+    var(--color-blood),
+    color-mix(in srgb, var(--color-blood) 55%, transparent),
+    transparent
+  );
+}
+
+.frame-cut {
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+}
+
+.logo-glow {
+  filter: drop-shadow(0 0 28px color-mix(in srgb, var(--color-blood) 45%, transparent))
+    drop-shadow(0 0 80px color-mix(in srgb, var(--color-crimson) 35%, transparent));
+}
+
+.studio-skin {
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, #15181d 0%, #0e1014 40%, #0a0b0e 100%);
+  color: #d7d2c8;
+}
+
+.studio-skin .noise,
+.studio-skin .vignette {
+  display: none;
+}
+
+.fan-ribbon {
+  border-bottom: 1px solid color-mix(in srgb, var(--color-bone) 18%, transparent);
+  background: color-mix(in srgb, var(--color-bone) 8%, #0d0d0d);
+}
