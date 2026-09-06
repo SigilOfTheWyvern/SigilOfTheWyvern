@@ -10,13 +10,13 @@ export default async function StudioLayout({ children }: { children: React.React
   const role = await prisma.role.findUnique({ where: { id: user.role.id } });
 
   return (
-    <div className="relative z-10 min-h-screen">
+    <div className="relative z-10 flex h-dvh flex-col overflow-hidden lg:flex-row">
       <StudioNav
         role={`${user.name} · ${user.role.name}`}
         roleColor={role?.color ?? "#c4a574"}
-        links={links}
+        groups={links}
       />
-      <div className="min-w-0 pt-[4.75rem] lg:pt-0 lg:pl-64">{children}</div>
+      <div className="min-w-0 flex-1 overflow-y-auto overscroll-contain">{children}</div>
     </div>
   );
 }

@@ -129,23 +129,83 @@ export async function requirePermission(resource: Resource, action: Action) {
   return user;
 }
 
-export function studioNav(user: AuthUser) {
-  const items = [
-    { href: "/studio", label: "Overview", resource: "studio" as const, action: "view" as const },
-    { href: "/studio/pages", label: "Pages", resource: "pages" as const, action: "view" as const },
-    { href: "/studio/music", label: "Music", resource: "music" as const, action: "view" as const },
-    { href: "/studio/tour", label: "Tour", resource: "tour" as const, action: "view" as const },
-    { href: "/studio/merch", label: "Merch", resource: "merch" as const, action: "view" as const },
-    { href: "/studio/tickets", label: "Tickets", resource: "tickets" as const, action: "view" as const },
-    { href: "/studio/media", label: "Media", resource: "media" as const, action: "view" as const },
-    { href: "/studio/news", label: "News", resource: "news" as const, action: "view" as const },
-    { href: "/studio/band", label: "Band", resource: "band" as const, action: "view" as const },
-    { href: "/studio/orders", label: "Orders", resource: "orders" as const, action: "view" as const },
-    { href: "/studio/users", label: "Users", resource: "users" as const, action: "view" as const },
-    { href: "/studio/roles", label: "Roles", resource: "roles" as const, action: "view" as const },
-    { href: "/studio/settings", label: "Settings", resource: "settings" as const, action: "view" as const },
-    { href: "/studio/inbox", label: "Inbox", resource: "inbox" as const, action: "view" as const },
-    { href: "/studio/audit", label: "Audit", resource: "audit" as const, action: "view" as const },
-  ];
-  return items.filter((item) => hasPermission(user, item.resource, item.action));
+export type StudioNavLink = {
+  href: string;
+  label: string;
+  resource: Resource;
+  action: Action;
+};
+
+export type StudioNavGroup = {
+  id: string;
+  label: string;
+  links: { href: string; label: string }[];
+};
+
+const STUDIO_NAV: { id: string; label: string; items: StudioNavLink[] }[] = [
+  {
+    id: "home",
+    label: "Studio",
+    items: [{ href: "/studio", label: "Overview", resource: "studio", action: "view" }],
+  },
+  {
+    id: "website",
+    label: "Website",
+    items: [
+      { href: "/studio/pages", label: "Pages", resource: "pages", action: "view" },
+      { href: "/studio/settings", label: "Settings", resource: "settings", action: "view" },
+    ],
+  },
+  {
+    id: "catalog",
+    label: "Catalog",
+    items: [
+      { href: "/studio/music", label: "Music", resource: "music", action: "view" },
+      { href: "/studio/news", label: "News", resource: "news", action: "view" },
+      { href: "/studio/band", label: "Band", resource: "band", action: "view" },
+      { href: "/studio/media", label: "Media", resource: "media", action: "view" },
+    ],
+  },
+  {
+    id: "dates",
+    label: "Dates",
+    items: [
+      { href: "/studio/tour", label: "Tour", resource: "tour", action: "view" },
+      { href: "/studio/tickets", label: "Tickets", resource: "tickets", action: "view" },
+    ],
+  },
+  {
+    id: "store",
+    label: "Store",
+    items: [
+      { href: "/studio/merch", label: "Merch", resource: "merch", action: "view" },
+      { href: "/studio/orders", label: "Orders", resource: "orders", action: "view" },
+    ],
+  },
+  {
+    id: "access",
+    label: "Access",
+    items: [
+      { href: "/studio/users", label: "Users", resource: "users", action: "view" },
+      { href: "/studio/roles", label: "Roles", resource: "roles", action: "view" },
+    ],
+  },
+  {
+    id: "house",
+    label: "House",
+    items: [
+      { href: "/studio/inbox", label: "Inbox", resource: "inbox", action: "view" },
+      { href: "/studio/audit", label: "Audit", resource: "audit", action: "view" },
+    ],
+  },
+];
+
+export function studioNav(user: AuthUser): StudioNavGroup[] {
+  return STUDIO_NAV.map((group) => ({
+    id: group.id,
+    label: group.label,
+    links: group.items
+      .filter((item) => hasPermission(user, item.resource, item.action))
+      .map(({ href, label }) => ({ href, label })),
+  })).filter((group) => group.links.length > 0);
 }
