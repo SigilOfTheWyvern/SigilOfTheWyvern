@@ -31,13 +31,13 @@ export function SiteShell({
   const fan = pathname.startsWith("/fan");
 
   if (studio) {
-    return <div className="studio-skin h-dvh overflow-hidden">{children}</div>;
+    return <div className="studio-skin">{children}</div>;
   }
 
   return (
     <>
       <SiteHeader account={account} siteName={siteName} tourLabel={tourLabel} nav={nav} />
-      <div className={fan ? "pt-16" : ""}>{children}</div>
+      <div className={fan ? "hall-shell" : ""}>{children}</div>
       {fan ? null : (
         <SiteFooter
           year={year}

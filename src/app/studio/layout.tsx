@@ -6,17 +6,18 @@ export const dynamic = "force-dynamic";
 
 export default async function StudioLayout({ children }: { children: React.ReactNode }) {
   const user = await requireStudio();
-  const links = studioNav(user);
+  const groups = studioNav(user);
   const role = await prisma.role.findUnique({ where: { id: user.role.id } });
 
   return (
-    <div className="relative z-10 flex h-dvh flex-col overflow-hidden lg:flex-row">
+    <div className="studio-shell">
       <StudioNav
         role={`${user.name} · ${user.role.name}`}
         roleColor={role?.color ?? "#c4a574"}
-        groups={links}
+        groups={groups}
+        links={groups}
       />
-      <div className="min-w-0 flex-1 overflow-y-auto overscroll-contain">{children}</div>
+      <div className="studio-main">{children}</div>
     </div>
   );
 }

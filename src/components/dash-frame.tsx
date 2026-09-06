@@ -57,6 +57,15 @@ export function DashFrame({
   }, [pathname]);
 
   useEffect(() => {
+    document.documentElement.classList.add("panel-lock");
+    document.body.classList.add("panel-lock");
+    return () => {
+      document.documentElement.classList.remove("panel-lock");
+      document.body.classList.remove("panel-lock");
+    };
+  }, []);
+
+  useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
@@ -71,24 +80,18 @@ export function DashFrame({
     .filter((group) => group.links.length > 0);
 
   const nav = (
-    <nav className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-5 py-4" aria-label="Hall">
+    <nav className="studio-nav-list !gap-3 !overflow-hidden px-4 py-3" aria-label="Hall">
       {groups.map((group) => (
-        <div key={group.id}>
-          <p className="pb-2 font-display text-[10px] tracking-[0.22em] text-ash uppercase">
-            {group.label}
-          </p>
-          <div className="flex flex-col gap-2">
+        <div key={group.id} className="studio-nav-group">
+          <p className="studio-nav-heading">{group.label}</p>
+          <div className="studio-nav-links">
             {group.links.map((link) => {
               const active = pathname === link.href;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`flex min-h-11 shrink-0 items-center border px-3 font-display text-[11px] tracking-[0.18em] uppercase ${
-                    active
-                      ? "border-blood bg-blood text-bone"
-                      : "border-steel text-mist hover:border-blood hover:text-bone"
-                  }`}
+                  className={`studio-nav-link ${active ? "is-active" : ""}`}
                 >
                   {link.label}
                 </Link>
@@ -101,9 +104,9 @@ export function DashFrame({
   );
 
   return (
-    <div className="relative z-10 flex h-[calc(100dvh-4rem)] flex-col overflow-hidden bg-void lg:flex-row">
-      <aside className="flex h-16 w-full shrink-0 items-center justify-between border-b border-steel bg-obsidian px-5 lg:h-full lg:w-60 lg:flex-col lg:items-stretch lg:border-r lg:border-b-0 lg:px-0">
-        <div className="flex min-w-0 items-center justify-between gap-3 lg:px-5 lg:py-5">
+    <div className="relative z-10 h-full bg-void">
+      <aside className={`hall-sidebar border-b border-steel bg-obsidian lg:border-r lg:border-b-0 ${open ? "bottom-0 !h-auto" : ""}`}>
+        <div className="flex h-16 shrink-0 items-center justify-between gap-3 px-5 lg:h-auto lg:py-5">
           <div className="min-w-0">
             <p className="font-display text-[10px] tracking-[0.28em] uppercase" style={{ color: roleColor }}>
               {eyebrow}
@@ -134,24 +137,24 @@ export function DashFrame({
             </button>
           </form>
         </div>
+        {open ? (
+          <div
+            id="hall-mobile-nav"
+            className="absolute inset-x-0 top-16 bottom-0 z-40 flex flex-col bg-obsidian lg:hidden"
+          >
+            {nav}
+            <form action={logoutAction} className="border-t border-steel p-5">
+              <button
+                type="submit"
+                className="min-h-11 w-full border border-steel px-3 py-2 font-display text-[11px] tracking-[0.18em] text-mist uppercase"
+              >
+                Sign out
+              </button>
+            </form>
+          </div>
+        ) : null}
       </aside>
-      {open ? (
-        <div
-          id="hall-mobile-nav"
-          className="absolute inset-x-0 top-16 bottom-0 z-40 flex flex-col bg-obsidian lg:hidden"
-        >
-          {nav}
-          <form action={logoutAction} className="border-t border-steel p-5">
-            <button
-              type="submit"
-              className="min-h-11 w-full border border-steel px-3 py-2 font-display text-[11px] tracking-[0.18em] text-mist uppercase"
-            >
-              Sign out
-            </button>
-          </form>
-        </div>
-      ) : null}
-      <div className="min-w-0 flex-1 overflow-y-auto overscroll-contain px-5 py-8 pb-[calc(2rem+env(safe-area-inset-bottom))] md:px-8">
+      <div className="h-full overflow-y-auto overscroll-contain px-5 pt-20 pb-[calc(2rem+env(safe-area-inset-bottom))] md:px-8 lg:pl-72 lg:pt-8">
         <section className="mx-auto max-w-4xl">{children}</section>
       </div>
     </div>
