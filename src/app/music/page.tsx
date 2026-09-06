@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AlbumArt } from "@/components/album-art";
+import { EmptyState } from "@/components/dash-ui";
 import { TrackPlayer } from "@/components/track-player";
 import { getPublishedAlbums, getSiteSettings } from "@/lib/catalog";
-import { musicPlatforms } from "@/lib/site-copy";
+import { musicPlatforms, setting } from "@/lib/site-copy";
 import { catalogImage } from "@/lib/slug";
 
 export const dynamic = "force-dynamic";
@@ -27,8 +28,8 @@ export default async function MusicPage() {
             <p className="font-display text-[11px] tracking-[0.32em] text-blood uppercase">
               Studio
             </p>
-            <h1 className="mt-4 font-display text-5xl tracking-[0.08em] text-bone uppercase md:text-6xl">
-              Music
+            <h1 className="mt-4 font-display text-4xl tracking-[0.08em] text-bone uppercase sm:text-5xl md:text-6xl">
+              {setting(settings, "music.title", "Music")}
             </h1>
             {intro ? <p className="mt-5 max-w-lg text-base leading-8 text-ash">{intro}</p> : null}
             {platforms.length ? (
@@ -37,7 +38,7 @@ export default async function MusicPage() {
                   <Link
                     key={platform.name}
                     href={platform.href}
-                    className="border border-steel px-4 py-2 font-display text-[10px] tracking-[0.2em] text-mist uppercase hover:border-blood hover:text-bone"
+                    className="inline-flex min-h-11 items-center border border-steel px-4 py-2 font-display text-[10px] tracking-[0.2em] text-mist uppercase hover:border-blood hover:text-bone"
                   >
                     {platform.name}
                   </Link>
@@ -54,6 +55,9 @@ export default async function MusicPage() {
           Discography
         </p>
         <div className="mt-8 space-y-4">
+          {albums.length === 0 ? (
+            <EmptyState title="No releases yet" body="Published albums from Studio will show here." />
+          ) : null}
           {albums.map((album, index) => (
             <Link
               key={album.slug}

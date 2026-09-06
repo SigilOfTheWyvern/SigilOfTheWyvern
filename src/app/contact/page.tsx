@@ -26,8 +26,8 @@ export default async function ContactPage() {
           <p className="font-display text-[11px] tracking-[0.32em] text-blood uppercase">
             {setting(settings, "contact.kicker", "Direct line")}
           </p>
-          <h1 className="mt-4 font-display text-5xl tracking-[0.08em] text-bone uppercase">
-            Contact
+          <h1 className="mt-4 font-display text-4xl tracking-[0.08em] text-bone uppercase sm:text-5xl">
+            {setting(settings, "contact.title", "Contact")}
           </h1>
           {intro ? <p className="mt-5 max-w-md text-sm leading-7 text-ash">{intro}</p> : null}
           <div className="mt-10">

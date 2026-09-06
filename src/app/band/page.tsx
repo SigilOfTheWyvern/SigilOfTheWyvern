@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { EmptyState } from "@/components/dash-ui";
 import { getPublishedMembers, getSiteSettings } from "@/lib/catalog";
 import { setting } from "@/lib/site-copy";
 
@@ -24,7 +25,7 @@ export default async function BandPage() {
         <p className="font-display text-[11px] tracking-[0.32em] text-blood uppercase">
           {kicker}
         </p>
-        <h1 className="mt-4 font-display text-5xl leading-tight tracking-[0.04em] text-bone uppercase md:text-6xl">
+        <h1 className="mt-4 font-display text-4xl leading-tight tracking-[0.04em] text-bone uppercase sm:text-5xl md:text-6xl">
           {headlineTop}
           {headlineBottom ? (
             <>
@@ -39,6 +40,11 @@ export default async function BandPage() {
 
       <section className="border-y border-steel bg-obsidian">
         <div className="mx-auto grid max-w-6xl md:grid-cols-2">
+          {members.length === 0 ? (
+            <div className="px-5 py-16 md:col-span-2 md:px-8">
+              <EmptyState title="No members published" body="Band members added in Studio will show here." />
+            </div>
+          ) : null}
           {members.map((member, index) => (
             <article
               key={member.name}

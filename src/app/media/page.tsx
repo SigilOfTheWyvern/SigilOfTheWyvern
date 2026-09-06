@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { EmptyState } from "@/components/dash-ui";
 import { MediaGallery } from "@/components/media-gallery";
 import { getPublishedPhotos, getPublishedVideos, getSiteSettings } from "@/lib/catalog";
 import { setting } from "@/lib/site-copy";
@@ -26,9 +27,14 @@ export default async function MediaPage() {
           <p className="font-display text-[11px] tracking-[0.32em] text-blood uppercase">
             {setting(settings, "media.kicker", "Film")}
           </p>
-          <h1 className="mt-4 font-display text-5xl tracking-[0.1em] text-bone uppercase">
-            Media
+          <h1 className="mt-4 font-display text-4xl tracking-[0.1em] text-bone uppercase sm:text-5xl">
+            {setting(settings, "media.title", "Media")}
           </h1>
+          {!featured && photos.length === 0 ? (
+            <div className="mt-10">
+              <EmptyState title="No media yet" body="Published photos and films from Studio will show here." />
+            </div>
+          ) : null}
         </div>
         {featured ? (
           featured.embedUrl ? (

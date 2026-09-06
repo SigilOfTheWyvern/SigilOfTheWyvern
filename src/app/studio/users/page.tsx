@@ -1,4 +1,5 @@
 import { deleteUser, saveUser, syncSupabaseUsers } from "@/actions/users";
+import { ConfirmButton } from "@/components/confirm-button";
 import { DashHeader, EmptyState } from "@/components/dash-ui";
 import { prisma } from "@/lib/prisma";
 import { hasPermission, requirePermission } from "@/lib/rbac";
@@ -57,9 +58,13 @@ export default async function StudioUsersPage() {
               <div className="flex gap-2">
                 {canEdit ? <button className="border border-blood px-3 text-xs uppercase">Save</button> : null}
                 {canDelete ? (
-                  <button formAction={deleteUser.bind(null, user.id)} className="text-xs uppercase text-ember">
+                  <ConfirmButton
+                    formAction={deleteUser.bind(null, user.id)}
+                    message="Remove this account from Studio?"
+                    className="min-h-11 text-xs uppercase text-ember"
+                  >
                     Delete
-                  </button>
+                  </ConfirmButton>
                 ) : null}
               </div>
             </form>

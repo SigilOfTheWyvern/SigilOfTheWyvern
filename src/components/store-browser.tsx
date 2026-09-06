@@ -30,7 +30,7 @@ export function StoreBrowser({ products }: { products: ProductCard[] }) {
             key={item}
             type="button"
             onClick={() => setFilter(item)}
-            className={`border px-4 py-2 font-display text-[10px] tracking-[0.2em] uppercase ${
+            className={`min-h-11 border px-4 py-2 font-display text-[10px] tracking-[0.2em] uppercase ${
               filter === item
                 ? "border-blood bg-blood text-bone"
                 : "border-steel text-mist hover:border-blood"
@@ -40,6 +40,13 @@ export function StoreBrowser({ products }: { products: ProductCard[] }) {
           </button>
         ))}
       </div>
+      {visible.length === 0 ? (
+        <p className="mt-10 border border-dashed border-steel px-5 py-12 text-center text-sm text-ash">
+          {products.length === 0
+            ? "No relics are published yet."
+            : "Nothing in this filter."}
+        </p>
+      ) : null}
       <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {visible.map((product) => (
           <Link

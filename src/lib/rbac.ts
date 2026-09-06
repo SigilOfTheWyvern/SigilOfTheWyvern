@@ -21,9 +21,14 @@ export type AuthUser = {
   };
 };
 
+const PRIVILEGED_SLUGS = new Set(["founder", "super-admin", "developer", "band-owner"]);
+
+export function isPrivilegedSlug(slug?: string | null) {
+  return Boolean(slug && PRIVILEGED_SLUGS.has(slug));
+}
+
 export function isFounder(user: AuthUser | null | undefined) {
-  const slug = user?.role.slug;
-  return slug === "founder" || slug === "super-admin" || slug === "developer";
+  return isPrivilegedSlug(user?.role.slug);
 }
 
 export function canAccessStudio(user: AuthUser | null | undefined) {

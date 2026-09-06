@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getPublishedAlbums, getPublishedEvents, getPublishedNews, getPublishedPage, getSiteSettings } from "@/lib/catalog";
-import { setting } from "@/lib/site-copy";
+import { formatShowDate } from "@/lib/dates";
+import { setting, settingLines } from "@/lib/site-copy";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,8 @@ export default async function HomePage() {
     { href: "/media", title: "Media", copy: settings["home.mediaCopy"]?.trim() ?? "" },
     { href: "/store", title: "Store", copy: settings["home.storeCopy"]?.trim() ?? "" },
   ];
+  const sponsors = settingLines(settings, "home.sponsors");
+  const testimonials = settingLines(settings, "home.testimonials");
 
   return (
     <main className="relative z-10">
@@ -47,7 +50,7 @@ export default async function HomePage() {
         <div className="logo-glow relative mt-8 w-[min(88vw,520px)]">
           <Image
             src={logo}
-            alt="Sigil Of The Wyvern logo"
+            alt={`${siteName} logo`}
             width={1100}
             height={900}
             priority
@@ -62,16 +65,16 @@ export default async function HomePage() {
             {tagline}
           </p>
         ) : null}
-        <div className="relative mt-10 flex flex-col gap-3 sm:flex-row">
+        <div className="relative mt-10 flex w-full max-w-md flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center">
           <Link
             href="/music"
-            className="border border-blood bg-blood px-8 py-3 text-center font-display text-[11px] tracking-[0.24em] text-bone uppercase hover:bg-ember"
+            className="inline-flex min-h-12 items-center justify-center border border-blood bg-blood px-8 py-3 text-center font-display text-[11px] tracking-[0.24em] text-bone uppercase hover:bg-ember"
           >
             {listenLabel}
           </Link>
           <Link
             href="/tour"
-            className="border border-mist/40 px-8 py-3 text-center font-display text-[11px] tracking-[0.24em] text-bone uppercase hover:border-blood hover:text-blood"
+            className="inline-flex min-h-12 items-center justify-center border border-mist/40 px-8 py-3 text-center font-display text-[11px] tracking-[0.24em] text-bone uppercase hover:border-blood hover:text-blood"
           >
             {tourLabel}
           </Link>
@@ -111,7 +114,7 @@ export default async function HomePage() {
                   {nextShow.city}
                 </h2>
                 <p className="mt-3 text-sm text-ash">
-                  {nextShow.date.toUTCString().slice(0, 16)} · {nextShow.venue}
+                  {formatShowDate(nextShow.date)} · {nextShow.venue}
                 </p>
                 <p className="mt-6 font-display text-[11px] tracking-[0.2em] text-mist uppercase">
                   See all dates →
@@ -155,10 +158,43 @@ export default async function HomePage() {
             </div>
             <Link
               href="/news"
-              className="border border-mist/40 px-6 py-3 font-display text-[11px] tracking-[0.22em] text-bone uppercase hover:border-blood hover:text-blood"
+              className="inline-flex min-h-12 items-center justify-center border border-mist/40 px-6 py-3 font-display text-[11px] tracking-[0.22em] text-bone uppercase hover:border-blood hover:text-blood"
             >
               {allNews}
             </Link>
+          </div>
+        </section>
+      ) : null}
+
+      {sponsors.length ? (
+        <section className="border-t border-steel">
+          <div className="mx-auto max-w-6xl px-5 py-14 md:px-8">
+            <p className="font-display text-[10px] tracking-[0.28em] text-blood uppercase">Sponsors</p>
+            <ul className="mt-6 flex flex-wrap gap-3">
+              {sponsors.map((name) => (
+                <li
+                  key={name}
+                  className="border border-steel px-4 py-3 font-display text-[11px] tracking-[0.18em] text-mist uppercase"
+                >
+                  {name}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ) : null}
+
+      {testimonials.length ? (
+        <section className="border-t border-steel bg-obsidian">
+          <div className="mx-auto max-w-6xl px-5 py-14 md:px-8">
+            <p className="font-display text-[10px] tracking-[0.28em] text-blood uppercase">Voices</p>
+            <ul className="mt-6 grid gap-4 md:grid-cols-2">
+              {testimonials.map((quote) => (
+                <li key={quote} className="border border-steel px-5 py-6 text-sm leading-7 text-ash">
+                  {quote}
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
       ) : null}

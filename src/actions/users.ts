@@ -5,7 +5,7 @@ import { recordChange, writeAudit } from "@/lib/audit";
 import { ensureProfile } from "@/lib/profile";
 import { prisma } from "@/lib/prisma";
 import { ACTIONS, RESOURCES } from "@/lib/rbac-constants";
-import { isFounder, requirePermission } from "@/lib/rbac";
+import { isFounder, isPrivilegedSlug, requirePermission } from "@/lib/rbac";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { slugify } from "@/lib/slug";
 import { roleSchema, userAdminSchema } from "@/lib/validations";
@@ -25,10 +25,7 @@ export async function saveUser(formData: FormData): Promise<void> {
 
   const nextRole = await prisma.role.findUnique({ where: { id: parsed.data.roleId } });
   if (!nextRole) return;
-  if (
-    (nextRole.slug === "founder" || nextRole.slug === "super-admin" || nextRole.slug === "developer") &&
-    !isFounder(actor)
-  ) {
+  if (isPrivilegedSlug(nextRole.slug) && !isFounder(actor)) {
     return;
   }
 
@@ -36,6 +33,13 @@ export async function saveUser(formData: FormData): Promise<void> {
     where: { id },
     include: { role: true },
   });
+  if (previous && isPrivilegedSlug(previous.role.slug) && !isFounder(actor)) {
+    return;
+  }
+  if (previous?.role.slug === "founder" && nextRole.slug !== "founder") {
+    const founders = await prisma.user.count({ where: { role: { slug: "founder" } } });
+    if (founders <= 1) return;
+  }
   const user = await prisma.user.update({
     where: { id },
     data: {
@@ -90,8 +94,12 @@ export async function deleteUser(id: string): Promise<void> {
 
   const target = await prisma.user.findUnique({ where: { id }, include: { role: true } });
   if (!target) return;
-  if ((target.role.slug === "founder" || target.role.slug === "super-admin" || target.role.slug === "developer") && !isFounder(actor)) {
+  if (isPrivilegedSlug(target.role.slug) && !isFounder(actor)) {
     return;
+  }
+  if (target.role.slug === "founder") {
+    const founders = await prisma.user.count({ where: { role: { slug: "founder" } } });
+    if (founders <= 1) return;
   }
 
   const [orders, tickets, uploads] = await Promise.all([
@@ -177,6 +185,12 @@ export async function setRolePermissions(roleId: string, raw: string[]) {
   const actor = await requirePermission("roles", "manage");
   const role = await prisma.role.findUnique({ where: { id: roleId } });
   if (!role) return { error: "Role not found." };
+  if (isPrivilegedSlug(role.slug) && !isFounder(actor)) {
+    return { error: "Only a founder can change that role." };
+  }
+  if (role.slug === "founder") {
+    return { error: "Founder permissions cannot be reduced." };
+  }
 
   let allowed = raw.filter((entry) => {
     const [resource, action] = entry.split(":");
@@ -252,7 +266,7 @@ export async function deleteRole(id: string): Promise<void> {
     include: { _count: { select: { users: true } } },
   });
   if (!role) return;
-  if (role.slug === "founder" || role.slug === "fan") return;
+  if (role.slug === "founder" || role.slug === "fan" || isPrivilegedSlug(role.slug)) return;
   if (!isFounder(actor)) {
     if (role.isSystem) return;
     if (role._count.users > 0) return;

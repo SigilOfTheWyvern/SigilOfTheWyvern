@@ -5,16 +5,18 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AuthMenu, AuthMenuMobile, type AuthAccount } from "@/components/auth-menu";
 import { BagButton, useBag } from "@/components/bag";
-import { navLinks } from "@/lib/data";
+import { DEFAULT_NAV } from "@/lib/nav";
 
 export function SiteHeader({
   account,
   siteName = "SigilOfTheWyvern",
   tourLabel = "Tour Dates",
+  nav = DEFAULT_NAV.map((item) => ({ href: item.href, label: item.label })),
 }: {
   account: AuthAccount;
   siteName?: string;
   tourLabel?: string;
+  nav?: { href: string; label: string }[];
 }) {
   const pathname = usePathname();
   const { count } = useBag();
@@ -57,7 +59,7 @@ export function SiteHeader({
         </Link>
 
         <nav className="hidden items-center gap-4 lg:flex xl:gap-6" aria-label="Primary">
-          {navLinks.map((link) => {
+          {nav.map((link) => {
             const active =
               pathname === link.href || pathname.startsWith(`${link.href}/`);
             return (
@@ -88,7 +90,7 @@ export function SiteHeader({
 
         <button
           type="button"
-          className="flex h-10 w-10 items-center justify-center border border-steel text-bone lg:hidden"
+          className="flex h-12 w-12 items-center justify-center border border-steel text-bone lg:hidden"
           aria-expanded={open}
           aria-controls="mobile-nav"
           aria-label={open ? "Close menu" : "Open menu"}
@@ -116,13 +118,16 @@ export function SiteHeader({
       </div>
 
       {open ? (
-        <div id="mobile-nav" className="border-t border-steel bg-void lg:hidden">
-          <nav className="flex flex-col px-5 py-6" aria-label="Mobile">
-            {navLinks.map((link) => (
+        <div
+          id="mobile-nav"
+          className="fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto border-t border-steel bg-void pb-[env(safe-area-inset-bottom)] lg:hidden"
+        >
+          <nav className="flex min-h-full flex-col px-5 py-6" aria-label="Mobile">
+            {nav.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="border-b border-steel/70 py-4 font-display text-sm tracking-[0.28em] text-bone uppercase"
+                className="flex min-h-12 items-center border-b border-steel/70 font-display text-sm tracking-[0.28em] text-bone uppercase"
               >
                 {link.label}
               </Link>
@@ -130,7 +135,7 @@ export function SiteHeader({
             {account ? (
               <Link
                 href="/fan"
-                className="mt-6 border border-steel px-4 py-3 text-center font-display text-[11px] tracking-[0.24em] text-bone uppercase"
+                className="mt-6 inline-flex min-h-12 items-center justify-center border border-steel px-4 font-display text-[11px] tracking-[0.24em] text-bone uppercase"
               >
                 Bag{count > 0 ? ` · ${count}` : ""}
               </Link>
@@ -138,7 +143,7 @@ export function SiteHeader({
             <AuthMenuMobile account={account} />
             <Link
               href="/tour"
-              className="mt-3 border border-blood px-4 py-3 text-center font-display text-[11px] tracking-[0.24em] text-bone uppercase"
+              className="mt-3 inline-flex min-h-12 items-center justify-center border border-blood px-4 font-display text-[11px] tracking-[0.24em] text-bone uppercase"
             >
               {tourLabel}
             </Link>

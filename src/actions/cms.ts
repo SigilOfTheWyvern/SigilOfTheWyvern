@@ -256,6 +256,11 @@ export async function saveSection(formData: FormData) {
   const pageId = String(formData.get("pageId") ?? "");
   const id = String(formData.get("id") || "");
   const previous = id ? await prisma.pageSection.findUnique({ where: { id } }) : null;
+  await requireStatusChange(
+    "pages",
+    parsed.data.published ? "published" : "draft",
+    previous?.published ? "published" : "draft",
+  );
   const count = await prisma.pageSection.count({ where: { pageId } });
   const section = id
     ? await prisma.pageSection.update({

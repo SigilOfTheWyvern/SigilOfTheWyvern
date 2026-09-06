@@ -12,10 +12,10 @@ export default function RegisterPage() {
       <div className="w-full max-w-md border border-steel bg-obsidian p-8">
         <p className="font-display text-[11px] tracking-[0.32em] text-blood uppercase">Register</p>
         <h1 className="mt-3 font-display text-4xl tracking-[0.08em] text-bone uppercase">
-          Login / Register
+          Enter
         </h1>
         <p className="mt-4 text-sm leading-7 text-ash">
-          Marks are created in Supabase Authentication. If you already have one, enter it here.
+          This form signs in an existing mark. New accounts are created in Supabase Authentication, not here.
         </p>
         <form
           className="mt-8 space-y-4"

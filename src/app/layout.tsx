@@ -4,7 +4,8 @@ import { BagProvider } from "@/components/bag";
 import { SiteShell } from "@/components/site-shell";
 import { getSiteSettings } from "@/lib/catalog";
 import { canAccessStudio, getAuthUser } from "@/lib/rbac";
-import { setting } from "@/lib/site-copy";
+import { publicNav } from "@/lib/nav";
+import { setting, socialLinks } from "@/lib/site-copy";
 import "./globals.css";
 
 export const dynamic = "force-dynamic";
@@ -21,14 +22,28 @@ const outfit = Outfit({
   weight: ["300", "400", "500", "600"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "SigilOfTheWyvern",
-    template: "%s · SigilOfTheWyvern",
-  },
-  description:
-    "Official site of SigilOfTheWyvern — blackened death metal. Music, tour, store, and rites.",
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover" as const,
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const name = setting(settings, "site.name", "SigilOfTheWyvern");
+  return {
+    title: {
+      default: name,
+      template: `%s · ${name}`,
+    },
+    description: setting(
+      settings,
+      "seo.description",
+      "Official site of SigilOfTheWyvern — blackened death metal. Music, tour, store, and rites.",
+    ),
+  };
+}
 
 export default async function RootLayout({
   children,
@@ -59,6 +74,9 @@ export default async function RootLayout({
             footerBlurb={setting(settings, "footer.blurb")}
             siteName={setting(settings, "site.name", "SigilOfTheWyvern")}
             tourLabel={setting(settings, "home.tourLabel", "Tour Dates")}
+            moreLabel={setting(settings, "footer.more", "More")}
+            nav={publicNav(settings)}
+            social={socialLinks(settings)}
           >
             {children}
           </SiteShell>

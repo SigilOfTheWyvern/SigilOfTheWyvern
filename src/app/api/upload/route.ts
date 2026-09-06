@@ -4,6 +4,7 @@ import path from "path";
 import { NextResponse } from "next/server";
 import { recordChange } from "@/lib/audit";
 import { prisma } from "@/lib/prisma";
+import { RESOURCES } from "@/lib/rbac-constants";
 import { getAuthUser, hasPermission } from "@/lib/rbac";
 
 const ALLOWED = new Set(["image/png", "image/jpeg", "image/webp"]);
@@ -11,7 +12,8 @@ const MAX = 4 * 1024 * 1024;
 
 export async function POST(request: Request) {
   const user = await getAuthUser();
-  if (!user || !hasPermission(user, "media", "upload")) {
+  const canUpload = user && RESOURCES.some((resource) => hasPermission(user, resource, "upload"));
+  if (!user || !canUpload) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

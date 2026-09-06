@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { EmptyState } from "@/components/dash-ui";
 import { getPublishedNews, getSiteSettings } from "@/lib/catalog";
 import { setting } from "@/lib/site-copy";
 
@@ -19,10 +20,15 @@ export default async function NewsPage() {
         <p className="font-display text-[11px] tracking-[0.32em] text-blood uppercase">
           {setting(settings, "news.kicker", "Dispatches")}
         </p>
-        <h1 className="mt-4 font-display text-5xl tracking-[0.08em] text-bone uppercase">
-          News
+        <h1 className="mt-4 font-display text-4xl tracking-[0.08em] text-bone uppercase sm:text-5xl">
+          {setting(settings, "news.title", "News")}
         </h1>
         {intro ? <p className="mt-5 max-w-xl text-sm leading-7 text-ash">{intro}</p> : null}
+        {news.length === 0 ? (
+          <div className="mt-12">
+            <EmptyState title="No dispatches yet" body="Published news from Studio will show here." />
+          </div>
+        ) : null}
         <ol className="mt-12">
           {news.map((item) => (
             <li key={item.slug} className="border-t border-steel py-10">

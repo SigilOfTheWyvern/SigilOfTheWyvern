@@ -1,10 +1,12 @@
 import { RoleBuilder } from "@/components/role-builder";
 import { DashHeader } from "@/components/dash-ui";
+import { ensureSystemRoles } from "@/lib/ensure-roles";
 import { prisma } from "@/lib/prisma";
 import { hasPermission, isFounder, requirePermission } from "@/lib/rbac";
 
 export default async function StudioRolesPage() {
   const user = await requirePermission("roles", "view");
+  await ensureSystemRoles();
   const roles = await prisma.role.findMany({
     include: { permissions: true, _count: { select: { users: true } } },
     orderBy: { name: "asc" },

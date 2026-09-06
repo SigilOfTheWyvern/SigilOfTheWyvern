@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { AddTicket } from "@/components/add-ticket";
 import { getPublishedEvent } from "@/lib/catalog";
 import { money } from "@/lib/catalog";
+import { formatShowDate } from "@/lib/dates";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +25,7 @@ export default async function EventTicketsPage({
         ← Tour
       </Link>
       <p className="mt-6 font-display text-[11px] tracking-[0.28em] text-blood uppercase">
-        {event.date.toUTCString().slice(0, 16)}
+        {formatShowDate(event.date)}
       </p>
       <h1 className="mt-3 font-display text-5xl uppercase text-bone">{event.city}</h1>
       <p className="mt-3 text-sm text-ash">

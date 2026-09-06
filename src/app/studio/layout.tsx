@@ -16,7 +16,7 @@ export default async function StudioLayout({ children }: { children: React.React
         roleColor={role?.color ?? "#c4a574"}
         links={links}
       />
-      <div className="min-w-0 lg:pl-64">{children}</div>
+      <div className="min-w-0 pt-[4.75rem] lg:pt-0 lg:pl-64">{children}</div>
     </div>
   );
 }

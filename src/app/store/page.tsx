@@ -22,7 +22,9 @@ export default async function StorePage() {
         <div className="flex flex-col justify-between gap-6 border-b border-steel pb-10 md:flex-row md:items-end">
           <div>
             <p className="font-display text-[11px] tracking-[0.32em] text-blood uppercase">{kicker}</p>
-            <h1 className="mt-4 font-display text-5xl tracking-[0.08em] text-bone uppercase">Store</h1>
+            <h1 className="mt-4 font-display text-4xl tracking-[0.08em] text-bone uppercase sm:text-5xl">
+              {setting(settings, "store.title", "Store")}
+            </h1>
           </div>
           {intro ? <p className="max-w-sm text-sm leading-7 text-ash">{intro}</p> : null}
         </div>

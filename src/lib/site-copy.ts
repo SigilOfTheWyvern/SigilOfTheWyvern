@@ -36,7 +36,30 @@ export const HOME_FIELDS = [
   { key: "contact.origin", label: "Origin", hint: "Shown on the contact page if you want a location line." },
   { key: "contact.pressKit", label: "Press kit note", hint: "Optional note on the contact page. Leave blank to hide." },
   { key: "contact.mailingIntro", label: "Mailing list line", hint: "Short line above the email box." },
+  { key: "contact.title", label: "Contact title", hint: "Large title on the contact page." },
+  { key: "music.title", label: "Music title", hint: "Large title on the music page." },
+  { key: "media.title", label: "Media title", hint: "Large title on the media page." },
+  { key: "news.title", label: "News title", hint: "Large title on the news page." },
+  { key: "store.title", label: "Store title", hint: "Large title on the store page." },
+  { key: "nav.music", label: "Nav · Music", hint: "Header and footer label." },
+  { key: "nav.tour", label: "Nav · Tour", hint: "Header and footer label." },
+  { key: "nav.store", label: "Nav · Store", hint: "Header and footer label." },
+  { key: "nav.media", label: "Nav · Media", hint: "Header and footer label." },
+  { key: "nav.band", label: "Nav · Band", hint: "Header and footer label." },
+  { key: "nav.news", label: "Nav · News", hint: "Header and footer label." },
+  { key: "nav.contact", label: "Nav · Contact", hint: "Header and footer label." },
+  { key: "nav.hidden", label: "Hidden nav paths", hint: "Comma-separated paths to hide, like /news,/store." },
+  { key: "seo.description", label: "SEO description", hint: "Search and social description for the site." },
+  { key: "footer.more", label: "Footer more heading", hint: "Heading above News and Booking links." },
   { key: "footer.blurb", label: "Footer line", hint: "Small paragraph in the site footer." },
+  { key: "social.instagram", label: "Instagram", hint: "Full https link. Leave blank to hide." },
+  { key: "social.facebook", label: "Facebook", hint: "Full https link. Leave blank to hide." },
+  { key: "social.youtube", label: "YouTube", hint: "Full https link. Leave blank to hide." },
+  { key: "social.tiktok", label: "TikTok", hint: "Full https link. Leave blank to hide." },
+  { key: "social.bandcamp", label: "Bandcamp social", hint: "Full https link. Leave blank to hide." },
+  { key: "social.spotify", label: "Spotify social", hint: "Full https link. Leave blank to hide." },
+  { key: "home.sponsors", label: "Sponsors", hint: "One name per line. Leave blank to hide the homepage block." },
+  { key: "home.testimonials", label: "Testimonials", hint: "One quote per line. Leave blank to hide the homepage block." },
   { key: "fan.vault", label: "Fan vault note", hint: "Private copy inside the fan hall." },
 ] as const;
 
@@ -59,13 +82,15 @@ export const SITE_SECTIONS = [
       "home.musicCopy",
       "home.mediaCopy",
       "home.storeCopy",
+      "home.sponsors",
+      "home.testimonials",
     ],
   },
   {
     id: "music",
     label: "Music page",
     hint: "Intro and platform links on /music.",
-    keys: ["music.intro", "music.spotify", "music.bandcamp", "music.apple", "music.youtube"],
+    keys: ["music.title", "music.intro", "music.spotify", "music.bandcamp", "music.apple", "music.youtube"],
   },
   {
     id: "tour",
@@ -77,13 +102,13 @@ export const SITE_SECTIONS = [
     id: "store",
     label: "Store page",
     hint: "Headings on /store. Relics themselves are edited under Merch.",
-    keys: ["store.kicker", "store.intro"],
+    keys: ["store.title", "store.kicker", "store.intro"],
   },
   {
     id: "media",
     label: "Media page",
     hint: "Heading on /media. Photos and films are edited under Media.",
-    keys: ["media.kicker"],
+    keys: ["media.title", "media.kicker"],
   },
   {
     id: "band",
@@ -95,13 +120,14 @@ export const SITE_SECTIONS = [
     id: "news",
     label: "News page",
     hint: "Heading on /news. Articles are edited under News.",
-    keys: ["news.kicker", "news.intro"],
+    keys: ["news.title", "news.kicker", "news.intro"],
   },
   {
     id: "contact",
     label: "Contact page",
     hint: "Copy and emails on /contact.",
     keys: [
+      "contact.title",
       "contact.kicker",
       "contact.intro",
       "contact.booking",
@@ -112,10 +138,35 @@ export const SITE_SECTIONS = [
     ],
   },
   {
+    id: "nav",
+    label: "Navigation",
+    hint: "Header and footer labels. Hide a page by adding its path to Hidden nav paths.",
+    keys: ["nav.music", "nav.tour", "nav.store", "nav.media", "nav.band", "nav.news", "nav.contact", "nav.hidden"],
+  },
+  {
+    id: "seo",
+    label: "SEO",
+    hint: "The description search engines and shares use.",
+    keys: ["seo.description"],
+  },
+  {
     id: "footer",
     label: "Footer",
     hint: "The line under the band name at the bottom of every public page.",
-    keys: ["footer.blurb"],
+    keys: ["footer.blurb", "footer.more"],
+  },
+  {
+    id: "social",
+    label: "Social links",
+    hint: "Shown in the footer when a full https link is saved.",
+    keys: [
+      "social.instagram",
+      "social.facebook",
+      "social.youtube",
+      "social.tiktok",
+      "social.bandcamp",
+      "social.spotify",
+    ],
   },
   {
     id: "hall",
@@ -139,6 +190,8 @@ const LONG_KEYS = new Set([
   "contact.pressKit",
   "contact.mailingIntro",
   "footer.blurb",
+  "home.sponsors",
+  "home.testimonials",
   "fan.vault",
 ]);
 
@@ -162,4 +215,22 @@ export function musicPlatforms(settings: Record<string, string>) {
     { name: "Apple Music", href: settings["music.apple"]?.trim() ?? "" },
     { name: "YouTube", href: settings["music.youtube"]?.trim() ?? "" },
   ].filter((platform) => platform.href);
+}
+
+export function socialLinks(settings: Record<string, string>) {
+  return [
+    { name: "Instagram", href: settings["social.instagram"]?.trim() ?? "" },
+    { name: "Facebook", href: settings["social.facebook"]?.trim() ?? "" },
+    { name: "YouTube", href: settings["social.youtube"]?.trim() ?? "" },
+    { name: "TikTok", href: settings["social.tiktok"]?.trim() ?? "" },
+    { name: "Bandcamp", href: settings["social.bandcamp"]?.trim() ?? "" },
+    { name: "Spotify", href: settings["social.spotify"]?.trim() ?? "" },
+  ].filter((link) => link.href.startsWith("https://"));
+}
+
+export function settingLines(settings: Record<string, string>, key: string) {
+  return setting(settings, key)
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
 }

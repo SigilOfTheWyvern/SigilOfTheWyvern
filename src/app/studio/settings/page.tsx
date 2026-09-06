@@ -78,7 +78,7 @@ export default async function StudioSettingsPage() {
             })}
           </div>
           {canEdit ? (
-            <button className="mt-6 border border-blood bg-blood px-4 py-2 text-xs uppercase">
+            <button className="mt-6 min-h-11 border border-blood bg-blood px-4 py-2 text-xs uppercase">
               Save {section.label.toLowerCase()}
             </button>
           ) : null}

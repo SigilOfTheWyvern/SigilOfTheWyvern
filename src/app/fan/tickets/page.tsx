@@ -3,6 +3,7 @@ import { DashFrame, fanLinks } from "@/components/dash-frame";
 import { EmptyState } from "@/components/dash-ui";
 import { prisma } from "@/lib/prisma";
 import { ticketQr } from "@/lib/qr";
+import { formatShowDate } from "@/lib/dates";
 import { requireUser } from "@/lib/rbac";
 
 export const dynamic = "force-dynamic";
@@ -40,7 +41,7 @@ export default async function FanTicketsPage() {
               </p>
               <h2 className="mt-2 font-display text-2xl uppercase text-bone">{ticket.event.city}</h2>
               <p className="mt-2 text-sm text-ash">
-                {ticket.event.venue} · {ticket.event.date.toUTCString().slice(0, 16)}
+                {ticket.event.venue} · {formatShowDate(ticket.event.date)}
               </p>
               <p className="mt-4 font-display text-xs tracking-[0.18em] text-mist">{ticket.code}</p>
               <Image
