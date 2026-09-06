@@ -45,7 +45,7 @@ export async function saveProduct(formData: FormData) {
     status: formData.get("status"),
     imagePath: String(formData.get("imagePath") ?? ""),
   });
-  if (!parsed.success) return { error: "Relic fields are incomplete." };
+  if (!parsed.success) return;
   const id = String(formData.get("id") || "");
   const previous = id ? await prisma.product.findUnique({ where: { id } }) : null;
   await requireStatusChange("merch", parsed.data.status, previous?.status);
@@ -55,7 +55,6 @@ export async function saveProduct(formData: FormData) {
     : await prisma.product.create({ data });
   await touch(user.id, id ? "edit" : "create", "merch", product.id, previous, product, product.name);
   revalidateSite("/store", `/store/${product.slug}`, "/studio/merch");
-  return { ok: true, id: product.id };
 }
 
 export async function saveVariant(formData: FormData) {
@@ -67,7 +66,7 @@ export async function saveVariant(formData: FormData) {
   const sku = String(formData.get("sku") ?? "").trim() || `${product?.slug ?? "relic"}-${slugify(size)}`;
   const inventory = Number(formData.get("inventory") ?? 0);
   if (!size || Number.isNaN(inventory)) {
-    return { error: "Variant needs a size and quantity." };
+    return;
   }
   const previous = id ? await prisma.productVariant.findUnique({ where: { id } }) : null;
   const variant = id
@@ -77,7 +76,6 @@ export async function saveVariant(formData: FormData) {
       });
   await touch(user.id, id ? "edit" : "create", "merch", variant.id, previous, variant, `${variant.size} ${variant.sku}`);
   revalidateSite("/store", product?.slug ? `/store/${product.slug}` : "", "/studio/merch");
-  return { ok: true };
 }
 
 export async function deleteVariant(id: string) {
@@ -106,7 +104,7 @@ export async function saveEvent(formData: FormData) {
     status: formData.get("status"),
     published: formData.get("published") === "on",
   });
-  if (!parsed.success) return { error: "Date fields are incomplete." };
+  if (!parsed.success) return;
   const id = String(formData.get("id") || "");
   const previous = id ? await prisma.event.findUnique({ where: { id } }) : null;
   const nextPublished = Boolean(parsed.data.published);
@@ -126,7 +124,6 @@ export async function saveEvent(formData: FormData) {
     : await prisma.event.create({ data });
   await touch(user.id, id ? "edit" : "create", "tour", event.id, previous, event, event.city);
   revalidateSite("/tour", `/tour/${event.id}`, "/studio/tour", "/studio/tickets");
-  return { ok: true, id: event.id };
 }
 
 export async function saveTicketType(formData: FormData) {
@@ -135,13 +132,12 @@ export async function saveTicketType(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const priceCents = dollarsToCents(formData.get("priceDollars") || formData.get("priceCents"));
   const inventory = Number(formData.get("inventory") ?? 0);
-  if (!eventId || !name) return { error: "Ticket type needs a name." };
+  if (!eventId || !name) return;
   const type = await prisma.ticketType.create({
     data: { eventId, name, priceCents, inventory },
   });
   await touch(user.id, "create", "tickets", type.id, null, type, type.name);
   revalidateSite("/tour", `/tour/${eventId}`, "/studio/tickets", "/studio/tour");
-  return { ok: true };
 }
 
 export async function saveNews(formData: FormData) {
@@ -154,7 +150,7 @@ export async function saveNews(formData: FormData) {
     body: String(formData.get("body") ?? ""),
     status: String(formData.get("status") ?? "draft"),
   };
-  if (!data.slug || !data.title || !data.body) return { error: "News needs a title and body." };
+  if (!data.slug || !data.title || !data.body) return;
   const id = String(formData.get("id") || "");
   const previous = id ? await prisma.newsArticle.findUnique({ where: { id } }) : null;
   await requireStatusChange("news", data.status, previous?.status);
@@ -163,7 +159,6 @@ export async function saveNews(formData: FormData) {
     : await prisma.newsArticle.create({ data });
   await touch(user.id, id ? "edit" : "create", "news", article.id, previous, article, article.title);
   revalidateSite("/news", `/news/${article.slug}`, "/studio/news");
-  return { ok: true };
 }
 
 export async function deleteNews(id: string) {
@@ -185,7 +180,7 @@ export async function saveMember(formData: FormData) {
     sort: Number(formData.get("sort") ?? 0),
     status: String(formData.get("status") ?? "published"),
   };
-  if (!data.name || !data.role) return { error: "Member needs a name and role." };
+  if (!data.name || !data.role) return;
   const id = String(formData.get("id") || "");
   const previous = id ? await prisma.bandMember.findUnique({ where: { id } }) : null;
   await requireStatusChange("band", data.status, previous?.status);
@@ -194,7 +189,6 @@ export async function saveMember(formData: FormData) {
     : await prisma.bandMember.create({ data });
   await touch(user.id, id ? "edit" : "create", "band", member.id, previous, member, member.name);
   revalidateSite("/band", "/studio/band");
-  return { ok: true };
 }
 
 export async function saveAlbum(formData: FormData) {
@@ -214,7 +208,7 @@ export async function saveAlbum(formData: FormData) {
     imagePath: String(formData.get("imagePath") ?? "") || null,
     status: String(formData.get("status") ?? "draft"),
   };
-  if (!data.slug || !data.title) return { error: "Album needs a title." };
+  if (!data.slug || !data.title) return;
   const id = String(formData.get("id") || "");
   const previous = id ? await prisma.album.findUnique({ where: { id } }) : null;
   await requireStatusChange("music", data.status, previous?.status);
@@ -223,7 +217,6 @@ export async function saveAlbum(formData: FormData) {
     : await prisma.album.create({ data });
   await touch(user.id, id ? "edit" : "create", "music", album.id, previous, album, album.title);
   revalidateSite("/music", `/music/${album.slug}`, "/studio/music");
-  return { ok: true };
 }
 
 export async function saveSetting(key: string, value: string) {
@@ -259,7 +252,7 @@ export async function saveSection(formData: FormData) {
     background: formData.get("background") || undefined,
     published: formData.get("published") === "on",
   });
-  if (!parsed.success) return { error: "Section is incomplete." };
+  if (!parsed.success) return;
   const pageId = String(formData.get("pageId") ?? "");
   const id = String(formData.get("id") || "");
   const previous = id ? await prisma.pageSection.findUnique({ where: { id } }) : null;
@@ -280,7 +273,6 @@ export async function saveSection(formData: FormData) {
       });
   await touch(user.id, id ? "edit" : "create", "pages", section.id, previous, section, section.heading ?? "Home block");
   revalidateSite("/studio/pages");
-  return { ok: true };
 }
 
 export async function reorderSection(id: string, direction: "up" | "down") {
@@ -324,7 +316,7 @@ export async function saveVideo(formData: FormData) {
     embedUrl: String(formData.get("embedUrl") ?? "").trim() || null,
     status: String(formData.get("status") ?? "published"),
   };
-  if (!data.slug || !data.title) return { error: "Video needs a title." };
+  if (!data.slug || !data.title) return;
   const id = String(formData.get("id") || "");
   const previous = id ? await prisma.video.findUnique({ where: { id } }) : null;
   await requireStatusChange("media", data.status, previous?.status);
@@ -333,7 +325,6 @@ export async function saveVideo(formData: FormData) {
     : await prisma.video.create({ data });
   await touch(user.id, id ? "edit" : "create", "media", video.id, previous, video, video.title);
   revalidateSite("/media", "/studio/media");
-  return { ok: true };
 }
 
 export async function savePhoto(formData: FormData) {
@@ -344,7 +335,7 @@ export async function savePhoto(formData: FormData) {
     path: String(formData.get("imagePath") ?? "") || null,
     status: String(formData.get("status") ?? "published"),
   };
-  if (!data.path) return { error: "Upload a photo first." };
+  if (!data.path) return;
   const id = String(formData.get("id") || "");
   const previous = id ? await prisma.photo.findUnique({ where: { id } }) : null;
   await requireStatusChange("media", data.status, previous?.status);
@@ -353,7 +344,6 @@ export async function savePhoto(formData: FormData) {
     : await prisma.photo.create({ data });
   await touch(user.id, id ? "edit" : "create", "media", photo.id, previous, photo, photo.caption || "Still");
   revalidateSite("/media", "/studio/media");
-  return { ok: true };
 }
 
 export async function deletePhoto(id: string) {
@@ -380,12 +370,11 @@ export async function saveTicketTypeUpdate(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const priceCents = dollarsToCents(formData.get("priceDollars") || formData.get("priceCents"));
   const inventory = Number(formData.get("inventory") ?? 0);
-  if (!id || !name) return { error: "Ticket type needs a name." };
+  if (!id || !name) return;
   const previous = await prisma.ticketType.findUnique({ where: { id } });
   const type = await prisma.ticketType.update({ where: { id }, data: { name, priceCents, inventory } });
   await touch(user.id, "edit", "tickets", id, previous, type, name);
   revalidateSite("/tour", previous?.eventId ? `/tour/${previous.eventId}` : "", "/studio/tickets", "/studio/tour");
-  return { ok: true };
 }
 
 export async function deleteTicketType(id: string) {
@@ -410,14 +399,13 @@ export async function saveTrack(formData: FormData) {
   const albumId = String(formData.get("albumId") ?? "");
   const title = String(formData.get("title") ?? "").trim();
   const duration = String(formData.get("duration") ?? "").trim();
-  if (!albumId || !title) return { error: "Track needs a title." };
+  if (!albumId || !title) return;
   const sort = await prisma.track.count({ where: { albumId } });
   const track = await prisma.track.create({
     data: { albumId, title, duration: duration || "0:00", sort },
   });
   await touch(user.id, "create", "music", track.id, null, track, track.title);
   revalidateSite("/music", "/studio/music");
-  return { ok: true };
 }
 
 export async function deleteTrack(id: string) {
@@ -456,10 +444,9 @@ export async function setOrderStatus(formData: FormData) {
   const user = await requirePermission("orders", "manage");
   const id = String(formData.get("id") ?? "");
   const status = String(formData.get("status") ?? "");
-  if (!id || !status) return { error: "Order status is missing." };
+  if (!id || !status) return;
   const previous = await prisma.order.findUnique({ where: { id } });
   const order = await prisma.order.update({ where: { id }, data: { status } });
   await touch(user.id, "manage", "orders", id, { status: previous?.status }, { status: order.status }, order.id.slice(-8));
   revalidatePath("/studio/orders");
-  return { ok: true };
 }

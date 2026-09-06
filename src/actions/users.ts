@@ -10,11 +10,9 @@ import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { slugify } from "@/lib/slug";
 import { roleSchema, userAdminSchema } from "@/lib/validations";
 
-export async function saveUser(formData: FormData) {
+export async function saveUser(formData: FormData): Promise<void> {
   const id = String(formData.get("id") || "");
-  if (!id) {
-    return { error: "Create the login in Supabase Authentication, then sync users here." };
-  }
+  if (!id) return;
 
   const actor = await requirePermission("users", "edit");
   const parsed = userAdminSchema.safeParse({
@@ -23,15 +21,15 @@ export async function saveUser(formData: FormData) {
     roleId: formData.get("roleId"),
     status: formData.get("status"),
   });
-  if (!parsed.success) return { error: "User fields are incomplete." };
+  if (!parsed.success) return;
 
   const nextRole = await prisma.role.findUnique({ where: { id: parsed.data.roleId } });
-  if (!nextRole) return { error: "That role does not exist." };
+  if (!nextRole) return;
   if (
     (nextRole.slug === "founder" || nextRole.slug === "super-admin" || nextRole.slug === "developer") &&
     !isFounder(actor)
   ) {
-    return { error: "Only a founder can assign founder access." };
+    return;
   }
 
   const previous = await prisma.user.findUnique({
@@ -60,18 +58,15 @@ export async function saveUser(formData: FormData) {
     after: { name: user.name, email: user.email, role: nextRole.name, status: user.status },
   });
   revalidatePath("/studio/users");
-  return { ok: true };
 }
 
-export async function syncSupabaseUsers() {
+export async function syncSupabaseUsers(): Promise<void> {
   const actor = await requirePermission("users", "create");
   const admin = createSupabaseAdmin();
-  if (!admin) {
-    return { error: "Add SUPABASE_SERVICE_ROLE_KEY to sync users from Supabase." };
-  }
+  if (!admin) return;
 
   const { data, error } = await admin.auth.admin.listUsers({ perPage: 1000 });
-  if (error) return { error: error.message };
+  if (error) return;
 
   let created = 0;
   for (const authUser of data.users) {
@@ -87,17 +82,16 @@ export async function syncSupabaseUsers() {
     meta: JSON.stringify({ synced: data.users.length, created }),
   });
   revalidatePath("/studio/users");
-  return { ok: true, created };
 }
 
-export async function deleteUser(id: string) {
+export async function deleteUser(id: string): Promise<void> {
   const actor = await requirePermission("users", "delete");
-  if (actor.id === id) return { error: "You cannot delete your own mark." };
+  if (actor.id === id) return;
 
   const target = await prisma.user.findUnique({ where: { id }, include: { role: true } });
-  if (!target) return { error: "User not found." };
+  if (!target) return;
   if ((target.role.slug === "founder" || target.role.slug === "super-admin" || target.role.slug === "developer") && !isFounder(actor)) {
-    return { error: "Only a founder can remove a founder." };
+    return;
   }
 
   const [orders, tickets, uploads] = await Promise.all([
@@ -105,16 +99,14 @@ export async function deleteUser(id: string) {
     prisma.ticket.count({ where: { userId: id } }),
     prisma.mediaAsset.count({ where: { uploadedBy: id } }),
   ]);
-  if (orders || tickets || uploads) {
-    return { error: "This account has orders, tickets, or uploads. Suspend them instead." };
-  }
+  if (orders || tickets || uploads) return;
 
   await prisma.auditLog.updateMany({ where: { userId: id }, data: { userId: null } });
 
   const admin = createSupabaseAdmin();
   if (admin) {
     const { error } = await admin.auth.admin.deleteUser(id);
-    if (error) return { error: error.message };
+    if (error) return;
   }
 
   await prisma.user.delete({ where: { id } });
@@ -128,10 +120,9 @@ export async function deleteUser(id: string) {
     after: null,
   });
   revalidatePath("/studio/users");
-  return { ok: true };
 }
 
-export async function saveRole(formData: FormData) {
+export async function saveRole(formData: FormData): Promise<void> {
   const actor = await requirePermission("roles", formData.get("id") ? "edit" : "create");
   const parsed = roleSchema.safeParse({
     name: formData.get("name"),
@@ -139,13 +130,13 @@ export async function saveRole(formData: FormData) {
     description: formData.get("description"),
     color: formData.get("color") || "#c4a574",
   });
-  if (!parsed.success) return { error: "Role fields are incomplete." };
+  if (!parsed.success) return;
   const id = String(formData.get("id") || "");
   if (id) {
     const existing = await prisma.role.findUnique({ where: { id } });
-    if (!existing) return { error: "Role not found." };
+    if (!existing) return;
     if (existing.isSystem && parsed.data.slug !== existing.slug) {
-      return { error: "System role slugs cannot change." };
+      return;
     }
   }
   const data = {
@@ -180,7 +171,6 @@ export async function saveRole(formData: FormData) {
     }
   }
   revalidatePath("/studio/roles");
-  return { ok: true, id: role.id };
 }
 
 export async function setRolePermissions(roleId: string, raw: string[]) {
@@ -220,13 +210,13 @@ export async function setRolePermissions(roleId: string, raw: string[]) {
   return { ok: true };
 }
 
-export async function duplicateRole(id: string) {
+export async function duplicateRole(id: string): Promise<void> {
   const actor = await requirePermission("roles", "create");
   const source = await prisma.role.findUnique({
     where: { id },
     include: { permissions: true },
   });
-  if (!source) return { error: "Role not found." };
+  if (!source) return;
   const slug = `${source.slug}-copy-${Date.now().toString(36)}`;
   const copy = await prisma.role.create({
     data: {
@@ -253,31 +243,23 @@ export async function duplicateRole(id: string) {
     after: { name: copy.name, slug: copy.slug },
   });
   revalidatePath("/studio/roles");
-  return { ok: true };
 }
 
-export async function deleteRole(id: string) {
+export async function deleteRole(id: string): Promise<void> {
   const actor = await requirePermission("roles", "delete");
   const role = await prisma.role.findUnique({
     where: { id },
     include: { _count: { select: { users: true } } },
   });
-  if (!role) return { error: "Role not found." };
-  if (role.slug === "founder") {
-    return { error: "The Founder role cannot be deleted." };
-  }
-  if (role.slug === "fan") {
-    return { error: "The Fan role cannot be deleted. New accounts use it." };
-  }
+  if (!role) return;
+  if (role.slug === "founder" || role.slug === "fan") return;
   if (!isFounder(actor)) {
-    if (role.isSystem) return { error: "System roles cannot be deleted." };
-    if (role._count.users > 0) {
-      return { error: "Move users off this role before deleting it." };
-    }
+    if (role.isSystem) return;
+    if (role._count.users > 0) return;
   }
   if (role._count.users > 0) {
     const fan = await prisma.role.findUnique({ where: { slug: "fan" } });
-    if (!fan) return { error: "Fan role is missing. Cannot reassign users." };
+    if (!fan) return;
     await prisma.user.updateMany({ where: { roleId: id }, data: { roleId: fan.id } });
   }
   await prisma.role.delete({ where: { id } });
@@ -292,5 +274,4 @@ export async function deleteRole(id: string) {
   });
   revalidatePath("/studio/roles");
   revalidatePath("/studio/users");
-  return { ok: true };
 }

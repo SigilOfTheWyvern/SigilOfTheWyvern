@@ -7,45 +7,35 @@ import { requirePermission } from "@/lib/rbac";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { profileSchema } from "@/lib/validations";
 
-export async function updateProfile(formData: FormData) {
+export async function updateProfile(formData: FormData): Promise<void> {
   const user = await requirePermission("fan", "edit");
   const parsed = profileSchema.safeParse({ name: formData.get("name") });
-  if (!parsed.success) {
-    return { error: "Give a real name." };
-  }
+  if (!parsed.success) return;
   await prisma.user.update({
     where: { id: user.id },
     data: { name: parsed.data.name },
   });
   await writeAudit({ userId: user.id, action: "edit", resource: "fan", targetId: user.id });
   revalidatePath("/fan/profile");
-  return { ok: true };
 }
 
-export async function changePassword(formData: FormData) {
+export async function changePassword(formData: FormData): Promise<void> {
   const user = await requirePermission("fan", "edit");
   const current = String(formData.get("current") ?? "");
   const next = String(formData.get("next") ?? "");
-  if (next.length < 8) {
-    return { error: "New password must be 8+ characters." };
-  }
+  if (next.length < 8) return;
 
   const supabase = await createSupabaseServerClient();
   const { error: check } = await supabase.auth.signInWithPassword({
     email: user.email,
     password: current,
   });
-  if (check) {
-    return { error: "Current password is wrong." };
-  }
+  if (check) return;
 
   const { error } = await supabase.auth.updateUser({ password: next });
-  if (error) {
-    return { error: error.message };
-  }
+  if (error) return;
 
   await writeAudit({ userId: user.id, action: "edit", resource: "fan", targetId: user.id, meta: "password" });
-  return { ok: true };
 }
 
 export async function toggleFavorite(productId: string) {
