@@ -28,7 +28,7 @@ export const productSchema = z.object({
   blurb: z.string().trim().max(400),
   priceCents: z.coerce.number().int().min(0),
   status: z.enum(["draft", "published"]),
-  imagePath: z.string().trim().max(240).optional(),
+  imagePath: z.string().trim().max(500).optional(),
 });
 
 export const eventSchema = z.object({
@@ -60,7 +60,7 @@ export const sectionSchema = z.object({
   body: z.string().trim().max(4000).optional(),
   buttonLabel: z.string().trim().max(60).optional(),
   buttonHref: z.string().trim().max(200).optional(),
-  imagePath: z.string().trim().max(240).optional(),
+  imagePath: z.string().trim().max(500).optional(),
   background: z.string().trim().max(80).optional(),
   published: z.coerce.boolean().optional(),
 });

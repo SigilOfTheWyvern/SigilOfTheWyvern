@@ -14,10 +14,9 @@
 # next.js
 /.next/
 /out/
-.verify/
-.open-next/
+.netlify/
 .wrangler/
-.dev.vars
+.verify/
 
 # production
 /build

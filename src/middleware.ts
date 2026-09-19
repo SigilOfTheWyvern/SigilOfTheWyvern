@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { isSupabaseConfigured, supabasePublicKey, supabaseUrl } from "@/lib/supabase/env";
 
 function loginRedirect(request: NextRequest, pathname: string) {
   const login = new URL("/login", request.url);
@@ -22,8 +22,8 @@ export async function middleware(request: NextRequest) {
 
   let supabaseResponse = NextResponse.next({ request });
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl(),
+    supabasePublicKey(),
     {
       cookies: {
         getAll() {

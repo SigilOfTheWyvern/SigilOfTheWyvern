@@ -1,11 +1,10 @@
 import { randomBytes } from "crypto";
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 import { NextResponse } from "next/server";
 import { recordChange } from "@/lib/audit";
 import { prisma } from "@/lib/prisma";
 import { RESOURCES } from "@/lib/rbac-constants";
 import { getAuthUser, hasPermission } from "@/lib/rbac";
+import { storeUpload } from "@/lib/storage";
 
 const ALLOWED = new Set(["image/png", "image/jpeg", "image/webp"]);
 const MAX = 4 * 1024 * 1024;
@@ -28,11 +27,12 @@ export async function POST(request: Request) {
 
   const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
   const name = `${randomBytes(8).toString("hex")}.${ext}`;
-  const dir = path.join(process.cwd(), "public", "uploads");
-  await mkdir(dir, { recursive: true });
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(dir, name), buffer);
-  const publicPath = `/uploads/${name}`;
+  let publicPath: string;
+  try {
+    publicPath = await storeUpload(file, name);
+  } catch {
+    return NextResponse.json({ error: "Upload failed." }, { status: 500 });
+  }
 
   await prisma.mediaAsset.create({
     data: {

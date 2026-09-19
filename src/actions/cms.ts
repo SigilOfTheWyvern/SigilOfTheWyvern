@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { requirePermission, type Action, type Resource } from "@/lib/rbac";
 import { revalidateSite } from "@/lib/revalidate";
 import { HOME_FIELDS } from "@/lib/site-copy";
+import { removeStoredFile } from "@/lib/storage";
 import { dollarsToCents, slugify } from "@/lib/slug";
 import { eventSchema, productSchema, sectionSchema } from "@/lib/validations";
 
@@ -90,6 +91,7 @@ export async function deleteProduct(id: string) {
   const user = await requirePermission("merch", "delete");
   const previous = await prisma.product.findUnique({ where: { id } });
   await prisma.product.delete({ where: { id } });
+  await removeStoredFile(previous?.imagePath);
   await touch(user.id, "delete", "merch", id, previous, null, previous?.name);
   revalidateSite("/store", previous?.slug ? `/store/${previous.slug}` : "", "/studio/merch", "/fan/saved");
 }
@@ -355,6 +357,7 @@ export async function deletePhoto(id: string) {
   const user = await requirePermission("media", "delete");
   const previous = await prisma.photo.findUnique({ where: { id } });
   await prisma.photo.delete({ where: { id } });
+  await removeStoredFile(previous?.path);
   await touch(user.id, "delete", "media", id, previous, null, previous?.caption || "Still");
   revalidateSite("/media", "/studio/media");
 }
@@ -395,6 +398,7 @@ export async function deleteAlbum(id: string) {
   const user = await requirePermission("music", "delete");
   const previous = await prisma.album.findUnique({ where: { id } });
   await prisma.album.delete({ where: { id } });
+  await removeStoredFile(previous?.imagePath);
   await touch(user.id, "delete", "music", id, previous, null, previous?.title);
   revalidateSite("/music", previous?.slug ? `/music/${previous.slug}` : "", "/studio/music");
 }
@@ -425,6 +429,7 @@ export async function deleteMember(id: string) {
   const user = await requirePermission("band", "delete");
   const previous = await prisma.bandMember.findUnique({ where: { id } });
   await prisma.bandMember.delete({ where: { id } });
+  await removeStoredFile(previous?.imagePath);
   await touch(user.id, "delete", "band", id, previous, null, previous?.name);
   revalidateSite("/band", "/studio/band");
 }
@@ -433,6 +438,7 @@ export async function deleteVideo(id: string) {
   const user = await requirePermission("media", "delete");
   const previous = await prisma.video.findUnique({ where: { id } });
   await prisma.video.delete({ where: { id } });
+  await removeStoredFile(previous?.imagePath);
   await touch(user.id, "delete", "media", id, previous, null, previous?.title);
   revalidateSite("/media", "/studio/media");
 }
@@ -441,6 +447,7 @@ export async function deleteSection(id: string) {
   const user = await requirePermission("pages", "delete");
   const previous = await prisma.pageSection.findUnique({ where: { id } });
   await prisma.pageSection.delete({ where: { id } });
+  await removeStoredFile(previous?.imagePath);
   await touch(user.id, "delete", "pages", id, previous, null, previous?.heading ?? "Home block");
   revalidateSite("/studio/pages");
 }
