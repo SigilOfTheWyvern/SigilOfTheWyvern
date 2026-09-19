@@ -21,18 +21,38 @@ export default async function FanProfilePage() {
               <input
                 name="name"
                 defaultValue={user.name}
-                className="mt-2 h-12 w-full border border-steel bg-void px-4 text-sm text-bone outline-none focus:border-blood"
+                className="mt-2 h-12 w-full border border-steel bg-void px-4 text-base text-bone outline-none focus:border-blood"
               />
             </label>
-            <button type="submit" className="border border-blood bg-blood px-5 py-3 font-display text-[11px] tracking-[0.2em] text-bone uppercase">
+            <button
+              type="submit"
+              className="inline-flex min-h-12 w-full items-center justify-center border border-blood bg-blood px-5 py-3 font-display text-[11px] tracking-[0.2em] text-bone uppercase sm:w-auto"
+            >
               Save
             </button>
           </form>
           <form action={changePassword} className="mt-12 max-w-md space-y-4">
             <p className="font-display text-[10px] tracking-[0.2em] text-blood uppercase">Password</p>
-            <input name="current" type="password" placeholder="Current" className="h-12 w-full border border-steel bg-void px-4 text-sm text-bone outline-none focus:border-blood" />
-            <input name="next" type="password" placeholder="New" className="h-12 w-full border border-steel bg-void px-4 text-sm text-bone outline-none focus:border-blood" />
-            <button type="submit" className="border border-steel px-5 py-3 font-display text-[11px] tracking-[0.2em] text-mist uppercase hover:border-blood">
+            <input
+              name="current"
+              type="password"
+              placeholder="Current"
+              autoComplete="current-password"
+              aria-label="Current password"
+              className="h-12 w-full border border-steel bg-void px-4 text-base text-bone outline-none focus:border-blood"
+            />
+            <input
+              name="next"
+              type="password"
+              placeholder="New"
+              autoComplete="new-password"
+              aria-label="New password"
+              className="h-12 w-full border border-steel bg-void px-4 text-base text-bone outline-none focus:border-blood"
+            />
+            <button
+              type="submit"
+              className="inline-flex min-h-12 w-full items-center justify-center border border-steel px-5 py-3 font-display text-[11px] tracking-[0.2em] text-mist uppercase hover:border-blood sm:w-auto"
+            >
               Change password
             </button>
           </form>

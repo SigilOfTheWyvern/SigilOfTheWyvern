@@ -156,7 +156,7 @@ function ColorField({ name, defaultValue }: { name: string; defaultValue: string
           key={swatch}
           type="button"
           onClick={() => setColor(swatch)}
-          className={`h-8 w-8 border ${color === swatch ? "border-bone" : "border-steel"}`}
+          className={`h-11 w-11 border sm:h-8 sm:w-8 ${color === swatch ? "border-bone" : "border-steel"}`}
           style={{ background: swatch }}
           aria-label={swatch}
         />

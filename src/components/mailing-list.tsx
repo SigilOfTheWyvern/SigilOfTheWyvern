@@ -35,12 +35,12 @@ export function MailingList() {
           autoComplete="email"
           required
           placeholder="Your email"
-          className="h-12 flex-1 border border-steel bg-void px-4 text-sm text-bone outline-none placeholder:text-ash/70 focus:border-blood"
+          className="h-12 shrink-0 border border-steel bg-void px-4 text-base text-bone outline-none placeholder:text-ash/70 focus:border-blood sm:flex-1"
         />
         <button
           type="submit"
           disabled={pending}
-          className="h-12 border border-blood bg-blood px-6 font-display text-[11px] tracking-[0.22em] text-bone uppercase transition-colors hover:bg-ember disabled:opacity-60"
+          className="inline-flex h-12 shrink-0 items-center justify-center border border-blood bg-blood px-6 font-display text-[11px] tracking-[0.22em] text-bone uppercase transition-colors hover:bg-ember disabled:opacity-60"
         >
           {pending ? "Saving" : "Enter the Mark"}
         </button>

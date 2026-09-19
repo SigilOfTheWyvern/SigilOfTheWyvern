@@ -24,7 +24,7 @@ export default async function AlbumPage({ params }: Props) {
 
   return (
     <main className="relative z-10 pt-24">
-      <div className="mx-auto grid max-w-6xl gap-12 px-5 py-14 md:grid-cols-[0.8fr_1.2fr] md:px-8 md:py-20">
+      <div className="mx-auto grid max-w-6xl gap-8 px-5 py-14 md:grid-cols-[0.8fr_1.2fr] md:gap-12 md:px-8 md:py-20">
         <div>
           <AlbumArt title={album.year} tone={album.tone} image={catalogImage(album.imagePath)} className="aspect-square" />
           <p className="mt-6 text-sm text-ash">
@@ -34,14 +34,14 @@ export default async function AlbumPage({ params }: Props) {
         <div>
           <Link
             href="/music"
-            className="font-display text-[10px] tracking-[0.24em] text-mist uppercase hover:text-blood"
+            className="inline-flex min-h-11 items-center font-display text-[10px] tracking-[0.24em] text-mist uppercase hover:text-blood"
           >
             ← All music
           </Link>
           <p className="mt-6 font-display text-[11px] tracking-[0.28em] text-blood uppercase">
             {album.type}
           </p>
-          <h1 className="mt-3 font-display text-5xl tracking-[0.06em] text-bone uppercase">
+          <h1 className="mt-3 font-display text-3xl tracking-[0.06em] text-bone uppercase sm:text-4xl md:text-5xl">
             {album.title}
           </h1>
           <p className="mt-6 max-w-xl text-base leading-8 text-mist">{album.summary}</p>
@@ -57,7 +57,7 @@ export default async function AlbumPage({ params }: Props) {
             <p className="font-display text-[11px] tracking-[0.28em] text-blood uppercase">
               Fragment
             </p>
-            <pre className="mt-6 font-display text-lg leading-9 text-bone whitespace-pre-wrap">
+            <pre className="mt-6 font-display text-base leading-8 text-bone whitespace-pre-wrap sm:text-lg sm:leading-9">
               {album.lyrics}
             </pre>
           </div>
@@ -83,7 +83,7 @@ export default async function AlbumPage({ params }: Props) {
             </dl>
             <Link
               href="/store"
-              className="mt-8 inline-block border border-blood px-5 py-3 font-display text-[11px] tracking-[0.2em] text-bone uppercase hover:bg-blood"
+              className="mt-8 inline-flex min-h-12 items-center border border-blood px-5 py-3 font-display text-[11px] tracking-[0.2em] text-bone uppercase hover:bg-blood"
             >
               Buy relics
             </Link>

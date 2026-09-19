@@ -1,6 +1,7 @@
 import { deleteUser, saveUser, syncSupabaseUsers } from "@/actions/users";
 import { ConfirmButton } from "@/components/confirm-button";
 import { DashHeader, EmptyState } from "@/components/dash-ui";
+import { inputClass } from "@/components/easy-fields";
 import { prisma } from "@/lib/prisma";
 import { hasPermission, requirePermission } from "@/lib/rbac";
 
@@ -23,7 +24,7 @@ export default async function StudioUsersPage() {
         action={
           canSync ? (
             <form action={syncSupabaseUsers}>
-              <button className="border border-blood bg-blood px-4 py-3 font-display text-[11px] tracking-[0.2em] text-bone uppercase">
+              <button className="inline-flex min-h-12 w-full items-center justify-center border border-blood bg-blood px-4 py-3 font-display text-[11px] tracking-[0.2em] text-bone uppercase md:w-auto">
                 Sync from Supabase
               </button>
             </form>
@@ -38,25 +39,27 @@ export default async function StudioUsersPage() {
           />
         ) : (
           users.map((user) => (
-            <form key={user.id} action={saveUser} className="grid gap-2 border border-steel bg-obsidian p-4 md:grid-cols-6">
+            <form key={user.id} action={saveUser} className="grid gap-3 border border-steel bg-obsidian p-4 md:grid-cols-6 md:items-center">
               <input type="hidden" name="id" value={user.id} />
-              <input name="name" defaultValue={user.name} disabled={!canEdit} className="h-10 border border-steel bg-void px-3 text-sm" />
-              <input name="email" defaultValue={user.email} disabled={!canEdit} className="h-10 border border-steel bg-void px-3 text-sm" />
-              <select name="roleId" defaultValue={user.roleId} disabled={!canEdit} className="h-10 border border-steel bg-void px-3 text-sm">
+              <input name="name" defaultValue={user.name} disabled={!canEdit} aria-label="Name" className={inputClass} />
+              <input name="email" defaultValue={user.email} disabled={!canEdit} aria-label="Email" className={inputClass} />
+              <select name="roleId" defaultValue={user.roleId} disabled={!canEdit} aria-label="Role" className={inputClass}>
                 {roles.map((role) => (
                   <option key={role.id} value={role.id}>{role.name}</option>
                 ))}
               </select>
-              <select name="status" defaultValue={user.status} disabled={!canEdit} className="h-10 border border-steel bg-void px-3 text-sm">
+              <select name="status" defaultValue={user.status} disabled={!canEdit} aria-label="Status" className={inputClass}>
                 <option value="active">active</option>
                 <option value="disabled">suspended</option>
               </select>
               <p className="flex items-center gap-2 text-xs text-ash">
-                <span className="h-3 w-3 border border-steel" style={{ background: user.role.color }} />
+                <span className="h-3 w-3 shrink-0 border border-steel" style={{ background: user.role.color }} />
                 {user.role.name}
               </p>
-              <div className="flex gap-2">
-                {canEdit ? <button className="border border-blood px-3 text-xs uppercase">Save</button> : null}
+              <div className="flex flex-wrap gap-2">
+                {canEdit ? (
+                  <button className="inline-flex min-h-11 items-center border border-blood px-4 text-xs uppercase">Save</button>
+                ) : null}
                 {canDelete ? (
                   <ConfirmButton
                     formAction={deleteUser.bind(null, user.id)}

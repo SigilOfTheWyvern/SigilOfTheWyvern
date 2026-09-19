@@ -52,7 +52,7 @@ export function StoreBrowser({ products }: { products: ProductCard[] }) {
           <Link
             key={product.slug}
             href={`/store/${product.slug}`}
-            className="group border border-steel bg-charcoal/40 transition-colors hover:border-blood"
+            className="group border border-steel bg-charcoal/40 transition-colors hover:border-blood focus-visible:border-blood"
           >
             <AlbumArt
               title={product.kind}

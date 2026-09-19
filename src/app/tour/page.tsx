@@ -19,11 +19,11 @@ export default async function TourPage() {
 
   return (
     <main className="relative z-10 pt-24">
-      <header className="relative overflow-hidden border-b border-blood/40 bg-void px-5 py-20 md:px-8 md:py-28">
+      <header className="relative overflow-hidden border-b border-blood/40 bg-void px-5 py-14 sm:py-20 md:px-8 md:py-28">
         <p className="font-display text-[11px] tracking-[0.4em] text-blood uppercase">
           {setting(settings, "tour.kicker", "On tour")}
         </p>
-        <h1 className="mt-4 max-w-5xl break-words font-display text-4xl leading-[0.95] tracking-[0.06em] text-bone uppercase sm:text-5xl md:text-8xl">
+        <h1 className="mt-4 max-w-5xl break-words font-display text-[clamp(2rem,11vw,2.75rem)] leading-[0.95] tracking-[0.06em] whitespace-pre-line text-bone uppercase sm:text-5xl md:text-8xl">
           {setting(settings, "tour.headline", "Tour").replace(" ", "\n")}
         </h1>
       </header>
@@ -39,7 +39,7 @@ export default async function TourPage() {
               {formatShowDate(show.date)}
             </p>
             <div>
-              <p className="break-words font-display text-3xl tracking-[0.04em] text-bone uppercase sm:text-4xl md:text-5xl">{show.city}</p>
+              <p className="break-words font-display text-2xl tracking-[0.04em] text-bone uppercase sm:text-4xl md:text-5xl">{show.city}</p>
               <p className="mt-2 text-sm text-ash">
                 {show.venue}
                 {show.support ? ` · w/ ${show.support}` : ""}

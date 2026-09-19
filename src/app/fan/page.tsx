@@ -72,7 +72,7 @@ export default async function FanHomePage() {
 
 function Stat({ label, value, href }: { label: string; value: string; href: string }) {
   return (
-    <Link href={href} className="border border-steel bg-obsidian p-5 hover:border-blood">
+    <Link href={href} className="border border-steel bg-obsidian p-5 hover:border-blood focus-visible:border-blood">
       <p className="font-display text-[10px] tracking-[0.2em] text-ash uppercase">{label}</p>
       <p className="mt-2 font-display text-3xl text-bone">{value}</p>
     </Link>

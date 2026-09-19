@@ -23,7 +23,7 @@ export function SiteFooter({
             {year}
           </p>
         ) : null}
-        <p className="mt-3 font-display text-2xl tracking-[0.14em] text-bone uppercase">
+        <p className="mt-3 font-display text-xl tracking-[0.14em] text-bone uppercase sm:text-2xl">
           {siteName}
         </p>
         {blurb ? (
@@ -35,7 +35,7 @@ export function SiteFooter({
             <li key={link.href}>
               <Link
                 href={link.href}
-                className="inline-flex min-h-10 items-center font-display text-[11px] tracking-[0.2em] text-mist uppercase transition-colors hover:text-blood"
+                className="inline-flex min-h-11 items-center font-display text-[11px] tracking-[0.2em] text-mist uppercase transition-colors hover:text-blood"
               >
                 {link.label}
               </Link>
@@ -51,7 +51,7 @@ export function SiteFooter({
                   href={link.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex min-h-10 items-center border border-steel px-3 font-display text-[10px] tracking-[0.18em] text-ash uppercase hover:border-blood hover:text-bone"
+                  className="inline-flex min-h-11 items-center border border-steel px-3 font-display text-[10px] tracking-[0.18em] text-ash uppercase hover:border-blood hover:text-bone"
                 >
                   {link.name}
                 </a>

@@ -32,7 +32,7 @@ export function AddTicket({
           ticketTypeId,
         })
       }
-      className="border border-blood px-4 py-2 font-display text-[10px] tracking-[0.2em] text-bone uppercase hover:bg-blood"
+      className="inline-flex min-h-11 w-full shrink-0 items-center justify-center border border-blood px-4 py-2 font-display text-[10px] tracking-[0.2em] text-bone uppercase hover:bg-blood sm:w-auto"
     >
       Add ticket
     </button>

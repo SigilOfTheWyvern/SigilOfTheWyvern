@@ -23,7 +23,9 @@ export default async function StudioLayout({ children }: { children: React.React
         groups={groups}
         links={groups}
       />
-      <div className="studio-main">{children}</div>
+      <div id="main-content" className="studio-main" tabIndex={-1}>
+        {children}
+      </div>
     </div>
   );
 }

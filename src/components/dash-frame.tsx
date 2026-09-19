@@ -105,7 +105,7 @@ export function DashFrame({
 
   return (
     <div className="relative z-10 h-full bg-void">
-      <aside className={`hall-sidebar border-b border-steel bg-obsidian lg:border-r lg:border-b-0 ${open ? "bottom-0 !h-auto" : ""}`}>
+      <aside className="hall-sidebar border-b border-steel bg-obsidian lg:border-r lg:border-b-0">
         <div className="flex h-16 shrink-0 items-center justify-between gap-3 px-5 lg:h-auto lg:py-5">
           <div className="min-w-0">
             <p className="font-display text-[10px] tracking-[0.28em] uppercase" style={{ color: roleColor }}>
@@ -137,24 +137,24 @@ export function DashFrame({
             </button>
           </form>
         </div>
-        {open ? (
-          <div
-            id="hall-mobile-nav"
-            className="absolute inset-x-0 top-16 bottom-0 z-40 flex flex-col bg-obsidian lg:hidden"
-          >
-            {nav}
-            <form action={logoutAction} className="border-t border-steel p-5">
-              <button
-                type="submit"
-                className="min-h-11 w-full border border-steel px-3 py-2 font-display text-[11px] tracking-[0.18em] text-mist uppercase"
-              >
-                Sign out
-              </button>
-            </form>
-          </div>
-        ) : null}
       </aside>
-      <div className="h-full overflow-y-auto overscroll-contain px-5 pt-20 pb-[calc(2rem+env(safe-area-inset-bottom))] md:px-8 lg:pl-72 lg:pt-8">
+      {open ? (
+        <div id="hall-mobile-nav" className="hall-mobile-nav lg:hidden">
+          {nav}
+          <form action={logoutAction} className="border-t border-steel p-5">
+            <button
+              type="submit"
+              className="min-h-11 w-full border border-steel px-3 py-2 font-display text-[11px] tracking-[0.18em] text-mist uppercase"
+            >
+              Sign out
+            </button>
+          </form>
+        </div>
+      ) : null}
+      <div
+        id="hall-content"
+        className="h-full overflow-y-auto overscroll-contain px-5 pt-[5.5rem] pb-[calc(2rem+env(safe-area-inset-bottom))] md:px-8 lg:pl-72 lg:pt-8"
+      >
         <section className="mx-auto max-w-4xl">{children}</section>
       </div>
     </div>

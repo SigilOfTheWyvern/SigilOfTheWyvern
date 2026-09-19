@@ -6,15 +6,24 @@ import { hasPermission, requirePermission } from "@/lib/rbac";
 export default async function StudioHomePage() {
   const user = await requirePermission("studio", "view");
   const canAnalytics = hasPermission(user, "analytics", "view") || hasPermission(user, "studio", "view");
-  const [products, events, orders, users, photos] = canAnalytics
-    ? await Promise.all([
+  let products = 0;
+  let events = 0;
+  let orders = 0;
+  let users = 0;
+  let photos = 0;
+  if (canAnalytics) {
+    try {
+      [products, events, orders, users, photos] = await Promise.all([
         prisma.product.count(),
         prisma.event.count(),
         prisma.order.count(),
         prisma.user.count(),
         prisma.photo.count({ where: { path: { not: null } } }),
-      ])
-    : [0, 0, 0, 0, 0];
+      ]);
+    } catch (error) {
+      console.error("studio.home", error);
+    }
+  }
 
   const cards = (
     [
@@ -36,7 +45,7 @@ export default async function StudioHomePage() {
       {canAnalytics ? (
         <div className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
           {cards.map(([label, value, href]) => (
-            <Link key={label} href={href} className="border border-steel bg-obsidian p-5 hover:border-blood">
+            <Link key={label} href={href} className="border border-steel bg-obsidian p-5 hover:border-blood focus-visible:border-blood">
               <p className="font-display text-[10px] tracking-[0.2em] text-ash uppercase">{label}</p>
               <p className="mt-2 font-display text-3xl text-bone">{value}</p>
             </Link>

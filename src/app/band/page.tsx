@@ -25,7 +25,7 @@ export default async function BandPage() {
         <p className="font-display text-[11px] tracking-[0.32em] text-blood uppercase">
           {kicker}
         </p>
-        <h1 className="mt-4 font-display text-4xl leading-tight tracking-[0.04em] text-bone uppercase sm:text-5xl md:text-6xl">
+        <h1 className="mt-4 font-display text-3xl leading-tight tracking-[0.04em] text-bone uppercase sm:text-5xl md:text-6xl">
           {headlineTop}
           {headlineBottom ? (
             <>
@@ -34,7 +34,7 @@ export default async function BandPage() {
             </>
           ) : null}
         </h1>
-        {lead ? <p className="mt-10 text-xl leading-9 text-mist">{lead}</p> : null}
+        {lead ? <p className="mt-8 text-lg leading-8 text-mist sm:text-xl sm:leading-9">{lead}</p> : null}
         {body ? <p className="mt-6 text-base leading-8 text-ash">{body}</p> : null}
       </article>
 
@@ -48,7 +48,7 @@ export default async function BandPage() {
           {members.map((member, index) => (
             <article
               key={member.name}
-              className={`flex gap-6 px-5 py-10 md:px-10 ${
+              className={`flex gap-4 px-5 py-10 sm:gap-6 md:px-10 ${
                 index % 2 === 0 ? "md:border-r md:border-steel" : ""
               } ${index < 2 ? "border-b border-steel" : ""}`}
             >
@@ -61,7 +61,7 @@ export default async function BandPage() {
                   {member.mark}
                 </div>
               )}
-              <div>
+              <div className="min-w-0">
                 <p className="font-display text-[10px] tracking-[0.24em] text-ash uppercase">
                   {member.role}
                 </p>

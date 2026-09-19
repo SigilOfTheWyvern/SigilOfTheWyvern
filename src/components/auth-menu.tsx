@@ -10,7 +10,7 @@ export type AuthAccount = {
 } | null;
 
 const button =
-  "border px-3 py-2 font-display text-[10px] tracking-[0.22em] uppercase";
+  "inline-flex min-h-11 items-center border px-3 py-2 font-display text-[10px] tracking-[0.22em] uppercase";
 
 export function AuthMenu({ account }: { account: AuthAccount }) {
   if (!account) {
@@ -58,13 +58,13 @@ export function AuthMenuMobile({ account }: { account: AuthAccount }) {
       <>
         <Link
           href="/login"
-          className="mt-3 border border-steel px-4 py-3 text-center font-display text-[11px] tracking-[0.24em] text-bone uppercase"
+          className="mt-3 inline-flex min-h-12 items-center justify-center border border-steel px-4 py-3 text-center font-display text-[11px] tracking-[0.24em] text-bone uppercase"
         >
           Login
         </Link>
         <Link
           href="/register"
-          className="mt-3 border border-steel px-4 py-3 text-center font-display text-[11px] tracking-[0.24em] text-bone uppercase"
+          className="mt-3 inline-flex min-h-12 items-center justify-center border border-steel px-4 py-3 text-center font-display text-[11px] tracking-[0.24em] text-bone uppercase"
         >
           Register
         </Link>
@@ -76,14 +76,14 @@ export function AuthMenuMobile({ account }: { account: AuthAccount }) {
     <>
       <Link
         href="/fan"
-        className="mt-3 border border-bone/40 px-4 py-3 text-center font-display text-[11px] tracking-[0.24em] text-bone uppercase"
+        className="mt-3 inline-flex min-h-12 items-center justify-center border border-bone/40 px-4 py-3 text-center font-display text-[11px] tracking-[0.24em] text-bone uppercase"
       >
         Hall
       </Link>
       {account.studio ? (
         <Link
           href="/studio"
-          className="mt-3 border border-[#c4a574] bg-[#c4a574]/10 px-4 py-3 text-center font-display text-[11px] tracking-[0.24em] text-[#e8d7b0] uppercase"
+          className="mt-3 inline-flex min-h-12 items-center justify-center border border-[#c4a574] bg-[#c4a574]/10 px-4 py-3 text-center font-display text-[11px] tracking-[0.24em] text-[#e8d7b0] uppercase"
         >
           Studio
         </Link>

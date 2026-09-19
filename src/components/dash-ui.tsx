@@ -15,7 +15,7 @@ export function DashHeader({
     <div className="flex flex-col gap-4 border-b border-steel/80 pb-6 md:flex-row md:items-end md:justify-between">
       <div>
         <p className="font-display text-[10px] tracking-[0.28em] text-blood uppercase">{kicker}</p>
-        <h1 className="mt-2 font-display text-4xl tracking-[0.06em] text-bone uppercase">{title}</h1>
+        <h1 className="mt-2 font-display text-3xl tracking-[0.06em] text-bone uppercase sm:text-4xl">{title}</h1>
         {hint ? <p className="mt-3 max-w-2xl text-sm leading-7 text-ash">{hint}</p> : null}
       </div>
       {action}
@@ -41,7 +41,7 @@ export function EmptyState({
       {href && label ? (
         <Link
           href={href}
-          className="mt-6 inline-block border border-blood px-5 py-2 font-display text-[11px] tracking-[0.2em] text-bone uppercase hover:bg-blood"
+          className="mt-6 inline-flex min-h-12 items-center justify-center border border-blood px-5 py-2 font-display text-[11px] tracking-[0.2em] text-bone uppercase hover:bg-blood"
         >
           {label}
         </Link>
@@ -51,10 +51,10 @@ export function EmptyState({
 }
 
 export const fieldClass =
-  "h-11 w-full border border-steel bg-void px-3 text-sm text-bone outline-none focus:border-blood";
+  "h-12 w-full border border-steel bg-void px-3 text-base text-bone outline-none focus:border-blood";
 export const areaClass =
-  "w-full border border-steel bg-void px-3 py-2 text-sm text-bone outline-none focus:border-blood";
+  "w-full border border-steel bg-void px-3 py-3 text-base text-bone outline-none focus:border-blood";
 export const btnClass =
-  "border border-blood bg-blood px-4 py-2 font-display text-[11px] tracking-[0.18em] text-bone uppercase hover:bg-ember";
+  "inline-flex min-h-11 items-center justify-center border border-blood bg-blood px-4 py-2 font-display text-[11px] tracking-[0.18em] text-bone uppercase hover:bg-ember";
 export const ghostBtn =
-  "border border-steel px-4 py-2 font-display text-[11px] tracking-[0.18em] text-mist uppercase hover:border-blood hover:text-bone";
+  "inline-flex min-h-11 items-center justify-center border border-steel px-4 py-2 font-display text-[11px] tracking-[0.18em] text-mist uppercase hover:border-blood hover:text-bone";

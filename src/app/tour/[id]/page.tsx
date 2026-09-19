@@ -21,13 +21,13 @@ export default async function EventTicketsPage({
 
   return (
     <main className="relative z-10 mx-auto max-w-3xl px-5 pt-28 pb-20 md:px-8">
-      <Link href="/tour" className="font-display text-[10px] tracking-[0.2em] text-mist uppercase hover:text-blood">
+      <Link href="/tour" className="inline-flex min-h-11 items-center font-display text-[10px] tracking-[0.2em] text-mist uppercase hover:text-blood">
         ← Tour
       </Link>
       <p className="mt-6 font-display text-[11px] tracking-[0.28em] text-blood uppercase">
         {formatShowDate(event.date)}
       </p>
-      <h1 className="mt-3 font-display text-5xl uppercase text-bone">{event.city}</h1>
+      <h1 className="mt-3 font-display text-3xl uppercase text-bone sm:text-4xl md:text-5xl">{event.city}</h1>
       <p className="mt-3 text-sm text-ash">
         {event.venue}
         {event.support ? ` · w/ ${event.support}` : ""}
@@ -37,8 +37,11 @@ export default async function EventTicketsPage({
       ) : (
         <div className="mt-10 space-y-4">
           {event.ticketTypes.map((type) => (
-            <div key={type.id} className="flex items-center justify-between border border-steel px-5 py-4">
-              <div>
+            <div
+              key={type.id}
+              className="flex flex-col gap-3 border border-steel px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div className="min-w-0">
                 <p className="font-display uppercase text-bone">{type.name}</p>
                 <p className="text-sm text-ash">
                   {money(type.priceCents)} · {type.inventory} left

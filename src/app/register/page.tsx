@@ -9,9 +9,9 @@ export default function RegisterPage() {
 
   return (
     <main className="relative z-10 flex min-h-screen items-center justify-center px-5 pt-24 pb-16">
-      <div className="w-full max-w-md border border-steel bg-obsidian p-8">
+      <div className="w-full max-w-md border border-steel bg-obsidian p-5 sm:p-8">
         <p className="font-display text-[11px] tracking-[0.32em] text-blood uppercase">Register</p>
-        <h1 className="mt-3 font-display text-4xl tracking-[0.08em] text-bone uppercase">
+        <h1 className="mt-3 font-display text-3xl tracking-[0.06em] text-bone uppercase sm:text-4xl">
           Enter
         </h1>
         <p className="mt-4 text-sm leading-7 text-ash">
@@ -31,7 +31,7 @@ export default function RegisterPage() {
               name="email"
               type="email"
               required
-              className="mt-2 h-12 w-full border border-steel bg-void px-4 text-sm text-bone outline-none focus:border-blood"
+              className="mt-2 h-12 w-full border border-steel bg-void px-4 text-base text-bone outline-none focus:border-blood"
             />
           </label>
           <label className="block">
@@ -40,13 +40,13 @@ export default function RegisterPage() {
               name="password"
               type="password"
               required
-              className="mt-2 h-12 w-full border border-steel bg-void px-4 text-sm text-bone outline-none focus:border-blood"
+              className="mt-2 h-12 w-full border border-steel bg-void px-4 text-base text-bone outline-none focus:border-blood"
             />
           </label>
           {error ? <p className="text-sm text-ember">{error}</p> : null}
           <button
             type="submit"
-            className="w-full border border-blood bg-blood px-6 py-3 font-display text-[11px] tracking-[0.22em] text-bone uppercase hover:bg-ember"
+            className="inline-flex min-h-12 w-full items-center justify-center border border-blood bg-blood px-6 py-3 font-display text-[11px] tracking-[0.22em] text-bone uppercase hover:bg-ember"
           >
             Enter
           </button>

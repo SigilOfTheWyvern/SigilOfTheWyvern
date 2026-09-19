@@ -31,7 +31,7 @@ export function AddToBag({
             type="button"
             disabled={variant.inventory < 1}
             onClick={() => setVariantId(variant.id)}
-            className={`border px-3 py-2 font-display text-[11px] tracking-[0.16em] uppercase ${
+            className={`inline-flex min-h-11 min-w-11 items-center justify-center border px-3 py-2 font-display text-[11px] tracking-[0.16em] uppercase ${
               variantId === variant.id
                 ? "border-blood bg-blood text-bone"
                 : "border-steel text-mist hover:border-blood"
@@ -53,7 +53,7 @@ export function AddToBag({
             variantId: selected.id,
           });
         }}
-        className="mt-6 w-full border border-blood bg-blood px-6 py-3 font-display text-[11px] tracking-[0.24em] text-bone uppercase hover:bg-ember"
+        className="mt-6 inline-flex min-h-12 w-full items-center justify-center border border-blood bg-blood px-6 py-3 font-display text-[11px] tracking-[0.24em] text-bone uppercase hover:bg-ember"
       >
         Add to bag
       </button>

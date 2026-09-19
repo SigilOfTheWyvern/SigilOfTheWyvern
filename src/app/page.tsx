@@ -57,7 +57,7 @@ export default async function HomePage() {
             className="h-auto w-full"
           />
         </div>
-        <h1 className="relative mt-8 text-center font-display text-3xl font-semibold tracking-[0.18em] text-bone uppercase sm:text-5xl md:text-6xl">
+        <h1 className="relative mt-8 w-full max-w-full px-1 text-center font-display text-[clamp(1.35rem,6vw,3.75rem)] font-semibold tracking-[0.08em] text-bone uppercase sm:tracking-[0.14em] md:text-6xl md:tracking-[0.18em]">
           {siteName}
         </h1>
         {tagline ? (
@@ -92,7 +92,7 @@ export default async function HomePage() {
                 <p className="font-display text-[10px] tracking-[0.28em] text-blood uppercase">
                   {latestKicker}
                 </p>
-                <h2 className="mt-3 font-display text-3xl tracking-[0.08em] text-bone uppercase group-hover:text-blood">
+                <h2 className="mt-3 font-display text-3xl tracking-[0.08em] text-bone uppercase group-hover:text-blood group-focus-visible:text-blood">
                   {latest.title}
                 </h2>
                 <p className="mt-3 text-sm text-ash">
@@ -110,7 +110,7 @@ export default async function HomePage() {
                 <p className="font-display text-[10px] tracking-[0.28em] text-blood uppercase">
                   {nextKicker}
                 </p>
-                <h2 className="mt-3 font-display text-3xl tracking-[0.08em] text-bone uppercase group-hover:text-blood">
+                <h2 className="mt-3 font-display text-3xl tracking-[0.08em] text-bone uppercase group-hover:text-blood group-focus-visible:text-blood">
                   {nextShow.city}
                 </h2>
                 <p className="mt-3 text-sm text-ash">
@@ -131,7 +131,7 @@ export default async function HomePage() {
             <Link
               key={card.href}
               href={card.href}
-              className="border border-steel px-6 py-8 transition-colors hover:border-blood"
+              className="border border-steel px-6 py-8 transition-colors hover:border-blood focus-visible:border-blood"
             >
               <h3 className="font-display text-2xl tracking-[0.1em] text-bone uppercase">
                 {card.title}
@@ -223,7 +223,7 @@ export default async function HomePage() {
               {section.buttonHref && section.buttonLabel ? (
                 <Link
                   href={section.buttonHref}
-                  className="mt-6 inline-block border border-blood px-6 py-3 font-display text-[11px] tracking-[0.22em] text-bone uppercase hover:bg-blood"
+                  className="mt-6 inline-flex min-h-12 items-center border border-blood px-6 py-3 font-display text-[11px] tracking-[0.22em] text-bone uppercase hover:bg-blood"
                 >
                   {section.buttonLabel}
                 </Link>

@@ -41,7 +41,7 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <main className="relative z-10 bg-void pt-24">
-      <div className="mx-auto grid max-w-6xl gap-12 px-5 py-14 md:grid-cols-2 md:px-8">
+      <div className="mx-auto grid max-w-6xl gap-8 px-5 py-14 md:grid-cols-2 md:gap-12 md:px-8">
         <AlbumArt
           title={product.kind}
           tone="from-blood/20 via-void to-steel/40"
@@ -49,13 +49,13 @@ export default async function ProductPage({ params }: Props) {
           className="aspect-[4/5]"
         />
         <div>
-          <Link href="/store" className="font-display text-[10px] tracking-[0.24em] text-mist uppercase hover:text-blood">
+          <Link href="/store" className="inline-flex min-h-11 items-center font-display text-[10px] tracking-[0.24em] text-mist uppercase hover:text-blood">
             ← Store
           </Link>
           <p className="mt-6 font-display text-[11px] tracking-[0.24em] text-blood uppercase">
             {product.kind} · {product.fabric}
           </p>
-          <h1 className="mt-3 font-display text-4xl tracking-[0.06em] text-bone uppercase md:text-5xl">
+          <h1 className="mt-3 font-display text-3xl tracking-[0.06em] text-bone uppercase sm:text-4xl md:text-5xl">
             {product.name}
           </h1>
           <p className="mt-4 font-display text-2xl text-mist">{money(product.priceCents)}</p>
@@ -79,7 +79,7 @@ export default async function ProductPage({ params }: Props) {
           <p className="font-display text-[11px] tracking-[0.24em] text-mist uppercase">Also in the seal</p>
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             {related.map((item) => (
-              <Link key={item.slug} href={`/store/${item.slug}`} className="border border-steel p-5 hover:border-blood">
+              <Link key={item.slug} href={`/store/${item.slug}`} className="border border-steel p-5 hover:border-blood focus-visible:border-blood">
                 <p className="text-xs text-ash uppercase">{item.kind}</p>
                 <h2 className="mt-2 font-display text-xl uppercase text-bone">{item.name}</h2>
                 <p className="mt-3 text-sm text-mist">{money(item.priceCents)}</p>

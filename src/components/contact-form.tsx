@@ -34,7 +34,7 @@ export function ContactForm() {
         </span>
         <select
           name="subject"
-          className="mt-2 h-12 w-full border border-steel bg-void px-4 text-sm text-bone outline-none focus:border-blood"
+          className="mt-2 h-12 w-full border border-steel bg-void px-4 text-base text-bone outline-none focus:border-blood"
           defaultValue="Booking"
         >
           {subjects.map((subject) => (
@@ -53,13 +53,13 @@ export function ContactForm() {
           rows={6}
           required
           minLength={8}
-          className="mt-2 w-full border border-steel bg-void px-4 py-3 text-sm text-bone outline-none focus:border-blood"
+          className="mt-2 w-full border border-steel bg-void px-4 py-3 text-base text-bone outline-none focus:border-blood"
         />
       </label>
       <button
         type="submit"
         disabled={pending}
-        className="border border-blood bg-blood px-8 py-3 font-display text-[11px] tracking-[0.24em] text-bone uppercase hover:bg-ember disabled:opacity-60"
+        className="inline-flex min-h-12 w-full items-center justify-center border border-blood bg-blood px-8 py-3 font-display text-[11px] tracking-[0.24em] text-bone uppercase hover:bg-ember disabled:opacity-60 sm:w-auto"
       >
         {pending ? "Sending" : "Send"}
       </button>
@@ -98,7 +98,7 @@ function Field({
         type={type}
         autoComplete={autoComplete}
         required
-        className="mt-2 h-12 w-full border border-steel bg-void px-4 text-sm text-bone outline-none focus:border-blood"
+        className="mt-2 h-12 w-full border border-steel bg-void px-4 text-base text-bone outline-none focus:border-blood"
       />
     </label>
   );

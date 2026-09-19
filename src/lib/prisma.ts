@@ -43,8 +43,21 @@ function databaseUrl() {
   }
   try {
     const url = new URL(raw);
-    if (url.port === "6543") {
+    const pooler = url.hostname.includes("pooler.supabase.com");
+    if (pooler && (url.port === "5432" || url.port === "")) {
+      url.port = "6543";
+    }
+    if (pooler || url.port === "6543") {
       url.searchParams.set("pgbouncer", "true");
+    }
+    if (!url.searchParams.has("connection_limit")) {
+      url.searchParams.set("connection_limit", process.env.NODE_ENV === "development" ? "3" : "1");
+    }
+    if (!url.searchParams.has("connect_timeout")) {
+      url.searchParams.set("connect_timeout", "10");
+    }
+    if (!url.searchParams.has("sslmode")) {
+      url.searchParams.set("sslmode", "require");
     }
     return url.toString();
   } catch {

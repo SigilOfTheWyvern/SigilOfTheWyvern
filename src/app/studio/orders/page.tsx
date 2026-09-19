@@ -30,15 +30,20 @@ export default async function StudioOrdersPage() {
                   </p>
                 </div>
                 {canManage ? (
-                  <form action={setOrderStatus} className="flex gap-2">
+                  <form action={setOrderStatus} className="flex w-full flex-wrap gap-2 sm:w-auto">
                     <input type="hidden" name="id" value={order.id} />
-                    <select name="status" defaultValue={order.status} className="h-10 border border-steel bg-void px-3 text-sm">
+                    <select
+                      name="status"
+                      defaultValue={order.status}
+                      aria-label="Order status"
+                      className="h-12 min-w-0 flex-1 border border-steel bg-void px-3 text-base sm:flex-none"
+                    >
                       <option value="pending">pending</option>
                       <option value="paid">paid</option>
                       <option value="fulfilled">fulfilled</option>
                       <option value="cancelled">cancelled</option>
                     </select>
-                    <button className="border border-blood px-3 text-xs uppercase">Update</button>
+                    <button className="inline-flex min-h-12 items-center border border-blood px-4 text-xs uppercase">Update</button>
                   </form>
                 ) : (
                   <p className="text-sm text-blood">{order.status}</p>

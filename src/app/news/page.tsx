@@ -33,15 +33,15 @@ export default async function NewsPage() {
           {news.map((item) => (
             <li key={item.slug} className="border-t border-steel py-10">
               <p className="text-xs tracking-[0.18em] text-ash uppercase">{item.date}</p>
-              <h2 className="mt-3 font-display text-3xl tracking-[0.04em] text-bone uppercase">
-                <Link href={`/news/${item.slug}`} className="hover:text-blood">
+              <h2 className="mt-3 font-display text-2xl tracking-[0.04em] text-bone uppercase sm:text-3xl">
+                <Link href={`/news/${item.slug}`} className="hover:text-blood focus-visible:text-blood">
                   {item.title}
                 </Link>
               </h2>
               <p className="mt-4 text-sm leading-7 text-mist">{item.excerpt}</p>
               <Link
                 href={`/news/${item.slug}`}
-                className="mt-6 inline-block font-display text-[11px] tracking-[0.2em] text-ash uppercase hover:text-blood"
+                className="mt-4 inline-flex min-h-11 items-center font-display text-[11px] tracking-[0.2em] text-ash uppercase hover:text-blood"
               >
                 Read →
               </Link>

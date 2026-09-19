@@ -65,7 +65,7 @@ export function ImageUpload({
         )}
       </div>
       <div className="flex flex-wrap gap-2">
-        <label className="inline-block cursor-pointer border border-steel px-3 py-2 font-display text-[10px] tracking-[0.18em] text-mist uppercase hover:border-blood hover:text-bone">
+        <label className="inline-flex min-h-11 cursor-pointer items-center border border-steel px-3 py-2 font-display text-[10px] tracking-[0.18em] text-mist uppercase hover:border-blood hover:text-bone">
           {busy ? "Uploading…" : path ? "Replace photo" : "Upload photo"}
           <input
             type="file"
@@ -82,7 +82,7 @@ export function ImageUpload({
               setPath("");
               setError(null);
             }}
-            className="border border-steel px-3 py-2 font-display text-[10px] tracking-[0.18em] text-ember uppercase hover:border-ember"
+            className="inline-flex min-h-11 items-center border border-steel px-3 py-2 font-display text-[10px] tracking-[0.18em] text-ember uppercase hover:border-ember"
           >
             Remove photo
           </button>

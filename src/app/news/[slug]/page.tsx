@@ -24,26 +24,26 @@ export default async function NewsArticlePage({ params }: Props) {
       <article className="mx-auto max-w-2xl px-5 py-16 md:px-8">
         <Link
           href="/news"
-          className="font-display text-[10px] tracking-[0.24em] text-mist uppercase hover:text-blood"
+          className="inline-flex min-h-11 items-center font-display text-[10px] tracking-[0.24em] text-mist uppercase hover:text-blood"
         >
           ← All news
         </Link>
         <p className="mt-8 text-xs tracking-[0.18em] text-ash uppercase">{item.date}</p>
-        <h1 className="mt-4 font-display text-4xl leading-tight tracking-[0.04em] text-bone uppercase">
+        <h1 className="mt-4 font-display text-3xl leading-tight tracking-[0.04em] text-bone uppercase sm:text-4xl">
           {item.title}
         </h1>
         <p className="mt-8 text-lg leading-9 text-mist">{item.excerpt}</p>
         <p className="mt-6 text-base leading-8 text-ash">{item.body}</p>
-        <div className="mt-12 flex gap-4">
+        <div className="mt-12 flex flex-wrap gap-3">
           <Link
             href="/tour"
-            className="border border-blood px-5 py-3 font-display text-[11px] tracking-[0.2em] text-bone uppercase hover:bg-blood"
+            className="inline-flex min-h-12 flex-1 items-center justify-center border border-blood px-5 py-3 font-display text-[11px] tracking-[0.2em] text-bone uppercase hover:bg-blood sm:flex-none"
           >
             Tour
           </Link>
           <Link
             href="/music"
-            className="border border-steel px-5 py-3 font-display text-[11px] tracking-[0.2em] text-mist uppercase hover:border-blood hover:text-bone"
+            className="inline-flex min-h-12 flex-1 items-center justify-center border border-steel px-5 py-3 font-display text-[11px] tracking-[0.2em] text-mist uppercase hover:border-blood hover:text-bone sm:flex-none"
           >
             Music
           </Link>

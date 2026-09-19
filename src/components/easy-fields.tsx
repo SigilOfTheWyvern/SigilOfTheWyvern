@@ -22,9 +22,9 @@ export function Field({
 }
 
 export const inputClass =
-  "h-11 w-full border border-steel bg-void px-3 text-sm text-bone outline-none focus:border-blood";
+  "h-12 w-full border border-steel bg-void px-3 text-base text-bone outline-none focus:border-blood";
 export const areaClass =
-  "w-full border border-steel bg-void px-3 py-2 text-sm text-bone outline-none focus:border-blood";
+  "w-full border border-steel bg-void px-3 py-3 text-base text-bone outline-none focus:border-blood";
 
 export function AutoSlug({
   titleName = "title",
@@ -61,7 +61,7 @@ export function AutoSlug({
       <input type="hidden" name={slugName} value={slug} />
       <button
         type="button"
-        className="text-left text-[10px] uppercase tracking-[0.16em] text-ash"
+        className="inline-flex min-h-11 items-center text-left text-[10px] uppercase tracking-[0.16em] text-ash"
         onClick={() => setLocked(false)}
       >
         Link: /{slug || "…"}
