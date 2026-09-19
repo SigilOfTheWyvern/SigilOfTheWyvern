@@ -8,8 +8,8 @@ export function supabaseUrl() {
 
 export function supabasePublicKey() {
   return (
-    trim(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) ||
-    trim(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY)
+    trim(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) ||
+    trim(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
   );
 }
 

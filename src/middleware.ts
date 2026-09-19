@@ -1,6 +1,6 @@
-import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { isSupabaseConfigured, supabasePublicKey, supabaseUrl } from "@/lib/supabase/env";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { createSupabaseMiddlewareClient } from "@/lib/supabase/middleware";
 
 function loginRedirect(request: NextRequest, pathname: string) {
   const login = new URL("/login", request.url);
@@ -20,26 +20,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  let supabaseResponse = NextResponse.next({ request });
-  const supabase = createServerClient(
-    supabaseUrl(),
-    supabasePublicKey(),
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
-          );
-        },
-      },
-    },
-  );
-
+  const { supabase, response } = createSupabaseMiddlewareClient(request);
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -48,7 +29,7 @@ export async function middleware(request: NextRequest) {
     return loginRedirect(request, pathname);
   }
 
-  return supabaseResponse;
+  return response();
 }
 
 export const config = {
