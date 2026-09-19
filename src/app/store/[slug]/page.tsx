@@ -26,13 +26,18 @@ export default async function ProductPage({ params }: Props) {
 
   const related = (await getPublishedProducts()).filter((item) => item.slug !== product.slug).slice(0, 3);
   const user = await getAuthUser();
-  const saved = user
-    ? Boolean(
+  let saved = false;
+  if (user) {
+    try {
+      saved = Boolean(
         await prisma.favorite.findUnique({
           where: { userId_productId: { userId: user.id, productId: product.id } },
         }),
-      )
-    : false;
+      );
+    } catch {
+      saved = false;
+    }
+  }
 
   return (
     <main className="relative z-10 bg-void pt-24">

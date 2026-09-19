@@ -7,13 +7,19 @@ export const dynamic = "force-dynamic";
 export default async function StudioLayout({ children }: { children: React.ReactNode }) {
   const user = await requireStudio();
   const groups = studioNav(user);
-  const role = await prisma.role.findUnique({ where: { id: user.role.id } });
+  let roleColor = user.role.color;
+  try {
+    const role = await prisma.role.findUnique({ where: { id: user.role.id } });
+    roleColor = role?.color ?? roleColor;
+  } catch {
+    // Studio still renders if the color lookup fails.
+  }
 
   return (
     <div className="studio-shell">
       <StudioNav
         role={`${user.name} · ${user.role.name}`}
-        roleColor={role?.color ?? "#c4a574"}
+        roleColor={roleColor}
         groups={groups}
         links={groups}
       />

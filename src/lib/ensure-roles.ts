@@ -55,18 +55,22 @@ const EXTRA_ROLES = [
 ];
 
 export async function ensureSystemRoles() {
-  for (const def of EXTRA_ROLES) {
-    const existing = await prisma.role.findUnique({ where: { slug: def.slug } });
-    if (existing) continue;
-    await prisma.role.create({
-      data: {
-        name: def.name,
-        slug: def.slug,
-        description: def.description,
-        color: def.color,
-        isSystem: true,
-        permissions: { create: def.perms },
-      },
-    });
+  try {
+    for (const def of EXTRA_ROLES) {
+      const existing = await prisma.role.findUnique({ where: { slug: def.slug } });
+      if (existing) continue;
+      await prisma.role.create({
+        data: {
+          name: def.name,
+          slug: def.slug,
+          description: def.description,
+          color: def.color,
+          isSystem: true,
+          permissions: { create: def.perms },
+        },
+      });
+    }
+  } catch (error) {
+    console.error("ensureSystemRoles", error);
   }
 }
