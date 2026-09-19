@@ -12,33 +12,38 @@ export async function ensureProfile(authUser: User) {
   const email = (authUser.email ?? "").toLowerCase();
   if (!email) return null;
 
-  const existing = await prisma.user.findUnique({
-    where: { id: authUser.id },
-    include: { role: { include: { permissions: true } } },
-  });
-  if (existing) {
-    if (existing.email !== email) {
-      return prisma.user.update({
-        where: { id: authUser.id },
-        data: { email },
-        include: { role: { include: { permissions: true } } },
-      });
+  try {
+    const existing = await prisma.user.findUnique({
+      where: { id: authUser.id },
+      include: { role: { include: { permissions: true } } },
+    });
+    if (existing) {
+      if (existing.email !== email) {
+        return prisma.user.update({
+          where: { id: authUser.id },
+          data: { email },
+          include: { role: { include: { permissions: true } } },
+        });
+      }
+      return existing;
     }
-    return existing;
+
+    const adminEmail = process.env.SUPER_ADMIN_EMAIL?.trim().toLowerCase();
+    const roleSlug = adminEmail && email === adminEmail ? "founder" : "fan";
+    const role = await prisma.role.findUnique({ where: { slug: roleSlug } });
+    if (!role) return null;
+
+    return prisma.user.create({
+      data: {
+        id: authUser.id,
+        email,
+        name: displayName(authUser),
+        roleId: role.id,
+      },
+      include: { role: { include: { permissions: true } } },
+    });
+  } catch (error) {
+    console.error("ensureProfile", error);
+    return null;
   }
-
-  const adminEmail = process.env.SUPER_ADMIN_EMAIL?.trim().toLowerCase();
-  const roleSlug = adminEmail && email === adminEmail ? "founder" : "fan";
-  const role = await prisma.role.findUnique({ where: { slug: roleSlug } });
-  if (!role) return null;
-
-  return prisma.user.create({
-    data: {
-      id: authUser.id,
-      email,
-      name: displayName(authUser),
-      roleId: role.id,
-    },
-    include: { role: { include: { permissions: true } } },
-  });
 }

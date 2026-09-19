@@ -27,7 +27,10 @@ export async function loginAction(formData: FormData) {
     return { error: "The mark does not match. Check email and password." };
   }
 
-  await ensureProfile(data.user);
+  const profile = await ensureProfile(data.user);
+  if (!profile) {
+    return { error: "Signed in, but the hall could not open. Try again." };
+  }
 
   const next = String(formData.get("next") || "/fan");
   const safeNext = next.startsWith("/") ? next : "/fan";

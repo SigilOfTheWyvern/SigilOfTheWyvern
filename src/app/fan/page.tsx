@@ -9,18 +9,27 @@ export const dynamic = "force-dynamic";
 
 export default async function FanHomePage() {
   const user = await requireUser();
-  const [orders, tickets, notices, saved] = await Promise.all([
-    prisma.order.findMany({
-      where: { userId: user.id },
-      orderBy: { createdAt: "desc" },
-      take: 3,
-      include: { items: true },
-    }),
-    prisma.ticket.count({ where: { userId: user.id } }),
-    prisma.notification.count({ where: { userId: user.id, read: false } }),
-    prisma.favorite.count({ where: { userId: user.id } }),
-  ]);
-  const orderCount = await prisma.order.count({ where: { userId: user.id } });
+  let orders: Awaited<ReturnType<typeof prisma.order.findMany>> = [];
+  let tickets = 0;
+  let notices = 0;
+  let saved = 0;
+  let orderCount = 0;
+  try {
+    [orders, tickets, notices, saved, orderCount] = await Promise.all([
+      prisma.order.findMany({
+        where: { userId: user.id },
+        orderBy: { createdAt: "desc" },
+        take: 3,
+        include: { items: true },
+      }),
+      prisma.ticket.count({ where: { userId: user.id } }),
+      prisma.notification.count({ where: { userId: user.id, read: false } }),
+      prisma.favorite.count({ where: { userId: user.id } }),
+      prisma.order.count({ where: { userId: user.id } }),
+    ]);
+  } catch (error) {
+    console.error("fan.home", error);
+  }
 
   return (
     <DashFrame eyebrow="Fan hall" title={user.name} roleColor={user.role.color} links={fanLinks}>

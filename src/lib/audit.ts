@@ -53,15 +53,19 @@ export async function writeAudit(entry: {
   targetId?: string | null;
   meta?: string | null;
 }) {
-  await prisma.auditLog.create({
-    data: {
-      userId: entry.userId ?? undefined,
-      action: entry.action,
-      resource: entry.resource,
-      targetId: entry.targetId ?? undefined,
-      meta: entry.meta ?? undefined,
-    },
-  });
+  try {
+    await prisma.auditLog.create({
+      data: {
+        userId: entry.userId ?? undefined,
+        action: entry.action,
+        resource: entry.resource,
+        targetId: entry.targetId ?? undefined,
+        meta: entry.meta ?? undefined,
+      },
+    });
+  } catch (error) {
+    console.error("writeAudit", error);
+  }
 }
 
 export async function recordChange(entry: {
