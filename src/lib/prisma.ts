@@ -2,6 +2,11 @@ import { PrismaClient } from "@prisma/client";
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
+export function isDatabaseConfigured() {
+  const raw = process.env.DATABASE_URL?.trim() ?? "";
+  return Boolean(raw) && !raw.startsWith("file:");
+}
+
 function isProductionBuild() {
   return process.env.NEXT_PHASE === "phase-production-build";
 }

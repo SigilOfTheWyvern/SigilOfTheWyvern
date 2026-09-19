@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { ensureProfile } from "@/lib/profile";
+import { isDatabaseConfigured } from "@/lib/prisma";
 import { createSupabaseServerClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { loginSchema } from "@/lib/validations";
 
@@ -29,7 +30,12 @@ export async function loginAction(formData: FormData) {
 
   const profile = await ensureProfile(data.user);
   if (!profile) {
-    return { error: "Signed in, but the hall could not open. Try again." };
+    if (!isDatabaseConfigured()) {
+      return {
+        error: "Signed in, but the hall database is not connected. Add DATABASE_URL in Netlify → Environment variables (All scopes), then redeploy.",
+      };
+    }
+    return { error: "Signed in, but the hall could not open. Check DATABASE_URL on Netlify and try again." };
   }
 
   const next = String(formData.get("next") || "/fan");

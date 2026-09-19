@@ -5,6 +5,27 @@ function pairs(resource: string, actions: readonly string[]) {
   return actions.map((action) => ({ resource, action }));
 }
 
+const HALL_ROLES = [
+  {
+    name: "Founder",
+    slug: "founder",
+    description: "Founder of the mark. Full control.",
+    color: "#c4a574",
+    perms: RESOURCES.flatMap((resource) => pairs(resource, ACTIONS)),
+  },
+  {
+    name: "Fan",
+    slug: "fan",
+    description: "The rite of the crowd.",
+    color: "#e8e2da",
+    perms: [
+      ...pairs("fan", ["view", "edit"]),
+      ...pairs("orders", ["view"]),
+      ...pairs("tickets", ["view"]),
+    ],
+  },
+];
+
 const EXTRA_ROLES = [
   {
     name: "Manager",
@@ -53,6 +74,23 @@ const EXTRA_ROLES = [
     ],
   },
 ];
+
+export async function ensureHallRoles() {
+  for (const def of HALL_ROLES) {
+    const existing = await prisma.role.findUnique({ where: { slug: def.slug } });
+    if (existing) continue;
+    await prisma.role.create({
+      data: {
+        name: def.name,
+        slug: def.slug,
+        description: def.description,
+        color: def.color,
+        isSystem: true,
+        permissions: { create: def.perms },
+      },
+    });
+  }
+}
 
 export async function ensureSystemRoles() {
   try {

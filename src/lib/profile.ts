@@ -1,5 +1,6 @@
 import type { User } from "@supabase/supabase-js";
-import { prisma } from "@/lib/prisma";
+import { ensureHallRoles } from "@/lib/ensure-roles";
+import { isDatabaseConfigured, prisma } from "@/lib/prisma";
 
 function displayName(user: User) {
   const meta = user.user_metadata ?? {};
@@ -11,8 +12,10 @@ function displayName(user: User) {
 export async function ensureProfile(authUser: User) {
   const email = (authUser.email ?? "").toLowerCase();
   if (!email) return null;
+  if (!isDatabaseConfigured()) return null;
 
   try {
+    await ensureHallRoles();
     const existing = await prisma.user.findUnique({
       where: { id: authUser.id },
       include: { role: { include: { permissions: true } } },
