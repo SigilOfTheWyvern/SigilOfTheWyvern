@@ -6,14 +6,34 @@ function isProductionBuild() {
   return process.env.NEXT_PHASE === "phase-production-build";
 }
 
+function normalizeDatabaseUrl(raw: string) {
+  const value = raw.replace(/^["']|["']$/g, "");
+  const marker = value.indexOf("://");
+  if (marker === -1) return value;
+  const rest = value.slice(marker + 3);
+  const at = rest.lastIndexOf("@");
+  if (at === -1) return value;
+  const creds = rest.slice(0, at);
+  const host = rest.slice(at + 1);
+  const colon = creds.indexOf(":");
+  if (colon === -1) return value;
+  const user = creds.slice(0, colon);
+  const password = creds.slice(colon + 1);
+  const encoded =
+    /[@#/? ]/.test(password) && !password.includes("%")
+      ? encodeURIComponent(password)
+      : password;
+  return `${value.slice(0, marker + 3)}${user}:${encoded}@${host}`;
+}
+
 function databaseUrl() {
-  const raw = process.env.DATABASE_URL?.trim() ?? "";
+  const raw = normalizeDatabaseUrl(process.env.DATABASE_URL?.trim() ?? "");
   if (!raw || raw.startsWith("file:")) {
     if (isProductionBuild()) {
       return "postgresql://build:build@127.0.0.1:5432/postgres";
     }
     throw new Error(
-      "DATABASE_URL must be the Supabase Postgres URI. Set it in Netlify Site configuration → Environment variables.",
+      "DATABASE_URL must be the Supabase Postgres URI. Set it in Netlify Site configuration → Environment variables for All scopes.",
     );
   }
   try {
