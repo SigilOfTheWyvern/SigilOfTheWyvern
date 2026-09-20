@@ -4,9 +4,8 @@ import { revalidatePath } from "next/cache";
 import { recordChange, writeAudit } from "@/lib/audit";
 import { ensureProfile } from "@/lib/profile";
 import { prisma } from "@/lib/prisma";
-import { ACTIONS, RESOURCES } from "@/lib/rbac-constants";
+import { ACTIONS, HALL_ROLE_SLUGS, RESOURCES, isHallRoleSlug } from "@/lib/rbac-constants";
 import { isSiteOwner } from "@/lib/owners";
-import { HALL_ROLE_SLUGS } from "@/lib/rbac-constants";
 import { isFounder, isPrivilegedSlug, requirePermission } from "@/lib/rbac";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { slugify } from "@/lib/slug";
@@ -26,7 +25,7 @@ export async function saveUser(formData: FormData): Promise<void> {
   if (!parsed.success) return;
 
   const nextRole = await prisma.role.findUnique({ where: { id: parsed.data.roleId } });
-  if (!nextRole) return;
+  if (!nextRole || !isHallRoleSlug(nextRole.slug)) return;
   if (isPrivilegedSlug(nextRole.slug) && !isFounder(actor)) {
     return;
   }
@@ -38,11 +37,10 @@ export async function saveUser(formData: FormData): Promise<void> {
   if (previous && isPrivilegedSlug(previous.role.slug) && !isFounder(actor)) {
     return;
   }
-  if (
-    isSiteOwner({ id, email: parsed.data.email }) &&
-    (nextRole.slug !== "founder" || parsed.data.status !== "active")
-  ) {
-    return;
+  if (isSiteOwner({ id, email: parsed.data.email })) {
+    if (parsed.data.status !== "active" || !isPrivilegedSlug(nextRole.slug)) {
+      return;
+    }
   }
   if (previous?.role.slug === "founder" && nextRole.slug !== "founder") {
     const founders = await prisma.user.count({ where: { role: { slug: "founder" } } });

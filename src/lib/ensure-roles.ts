@@ -1,4 +1,4 @@
-import { ACTIONS, HALL_ROLE_SLUGS, PRIVILEGED_SLUGS, RESOURCES } from "@/lib/rbac-constants";
+import { ACTIONS, HALL_ROLE_SLUGS, PRIVILEGED_SLUGS, RESOURCES, isHallRoleSlug } from "@/lib/rbac-constants";
 import { prisma } from "@/lib/prisma";
 
 function pairs(resource: string, actions: readonly string[]) {
@@ -149,10 +149,4 @@ export async function ensureSystemRoles() {
   }
 }
 
-export function isHallRoleSlug(slug?: string | null) {
-  return Boolean(slug && ALLOWED_SLUGS.has(slug));
-}
-
-export function isFullAccessRole(slug?: string | null) {
-  return Boolean(slug && PRIVILEGED.has(slug));
-}
+export { isHallRoleSlug };
