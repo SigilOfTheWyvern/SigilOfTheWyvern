@@ -5,6 +5,7 @@ import { recordChange, writeAudit } from "@/lib/audit";
 import { ensureProfile } from "@/lib/profile";
 import { prisma } from "@/lib/prisma";
 import { ACTIONS, RESOURCES } from "@/lib/rbac-constants";
+import { isSiteOwnerId } from "@/lib/owners";
 import { isFounder, isPrivilegedSlug, requirePermission } from "@/lib/rbac";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { slugify } from "@/lib/slug";
@@ -34,6 +35,9 @@ export async function saveUser(formData: FormData): Promise<void> {
     include: { role: true },
   });
   if (previous && isPrivilegedSlug(previous.role.slug) && !isFounder(actor)) {
+    return;
+  }
+  if (isSiteOwnerId(id) && (nextRole.slug !== "founder" || parsed.data.status !== "active")) {
     return;
   }
   if (previous?.role.slug === "founder" && nextRole.slug !== "founder") {
@@ -94,6 +98,7 @@ export async function deleteUser(id: string): Promise<void> {
 
   const target = await prisma.user.findUnique({ where: { id }, include: { role: true } });
   if (!target) return;
+  if (isSiteOwnerId(id)) return;
   if (isPrivilegedSlug(target.role.slug) && !isFounder(actor)) {
     return;
   }
