@@ -102,25 +102,18 @@ export function StudioNav({
         <div className="flex min-w-0 items-center gap-3">
           {imagePath ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={imagePath}
-              alt=""
-              className="h-10 w-10 shrink-0 border border-[#2a3038] object-cover"
-            />
+            <img src={imagePath} alt="" className="dash-mark" />
           ) : (
-            <span
-              className="flex h-10 w-10 shrink-0 items-center justify-center border border-[#2a3038] font-display text-sm text-[#e8d7b0]"
-              aria-hidden
-            >
+            <span className="dash-mark" aria-hidden>
               {name.slice(0, 1).toUpperCase()}
             </span>
           )}
           <div className="min-w-0">
-            <p className="font-display text-[9px] tracking-[0.28em] uppercase" style={{ color: roleColor }}>
+            <p className="font-display text-[9px] tracking-[0.3em] uppercase" style={{ color: roleColor }}>
               {eyebrow}
             </p>
-            <p className="truncate font-display text-base tracking-[0.08em] text-[#f0ebe3] uppercase">{brand}</p>
-            <p className="truncate text-[11px] text-[#8d8680]">
+            <p className="truncate font-display text-base tracking-[0.1em] text-[#f0ebe3] uppercase">{brand}</p>
+            <p className="truncate text-[11px] tracking-[0.02em] text-[#8d8680]">
               {name} · {roleName}
             </p>
           </div>
@@ -138,9 +131,9 @@ export function StudioNav({
       </div>
       <div className="studio-sidebar-body" id="studio-mobile-nav">
         {nav}
-        <div className="studio-sidebar-foot !flex-col !items-stretch gap-1">
+        <div className="studio-sidebar-foot !flex-col !items-stretch gap-2">
           {showHall && showFan ? (
-            <div className="flex">
+            <div className="hall-switch" role="group" aria-label="Switch dashboard">
               <Link href="/studio" className={`studio-nav-link ${hallActive ? "is-active" : ""}`}>
                 Hall
               </Link>

@@ -38,8 +38,8 @@ export default async function FanHomePage() {
         <Stat label="Tickets" value={String(tickets)} href="/fan/tickets" />
         <Stat label="Unread" value={String(notices)} href="/fan/notifications" />
       </div>
-      <div className="mt-10">
-        <p className="font-display text-[10px] tracking-[0.24em] text-blood uppercase">Recent orders</p>
+      <div className="mt-12">
+        <p className="font-display text-[10px] tracking-[0.28em] text-blood uppercase">Recent orders</p>
         {orders.length === 0 ? (
           <div className="mt-4">
             <EmptyState
@@ -50,10 +50,12 @@ export default async function FanHomePage() {
             />
           </div>
         ) : (
-          <ul className="mt-4 divide-y divide-steel border border-steel">
+          <ul className="dash-panel mt-4 divide-y divide-[rgba(232,226,218,0.1)]">
             {orders.map((order) => (
               <li key={order.id} className="flex justify-between px-5 py-4 text-sm">
-                <span className="text-mist">{order.id.slice(-8).toUpperCase()}</span>
+                <span className="font-display tracking-[0.12em] text-mist">
+                  {order.id.slice(-8).toUpperCase()}
+                </span>
                 <span className="text-ash">
                   {order.status} · {money(order.totalCents)}
                 </span>
@@ -69,9 +71,9 @@ export default async function FanHomePage() {
 
 function Stat({ label, value, href }: { label: string; value: string; href: string }) {
   return (
-    <Link href={href} className="border border-steel bg-obsidian p-5 hover:border-blood focus-visible:border-blood">
-      <p className="font-display text-[10px] tracking-[0.2em] text-ash uppercase">{label}</p>
-      <p className="mt-2 font-display text-3xl text-bone">{value}</p>
+    <Link href={href} className="dash-panel block p-6">
+      <p className="font-display text-[10px] tracking-[0.24em] text-ash uppercase">{label}</p>
+      <p className="mt-3 font-display text-4xl tracking-[0.02em] text-bone">{value}</p>
     </Link>
   );
 }

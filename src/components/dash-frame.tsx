@@ -40,9 +40,9 @@ export function DashFrame({
   children: React.ReactNode;
 }) {
   return (
-    <main className="px-5 py-10 md:px-8">
+    <main className="mx-auto w-full max-w-5xl px-5 py-10 md:px-10 md:py-14">
       <DashHeader kicker={kicker} title={title} hint={hint} />
-      <div className="mt-8">{children}</div>
+      {children}
     </main>
   );
 }
