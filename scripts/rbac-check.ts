@@ -1,4 +1,4 @@
-import { isSiteOwnerId } from "../src/lib/owners";
+import { isSiteOwner, isSiteOwnerEmail, isSiteOwnerId } from "../src/lib/owners";
 import { hasPermission, isFounder, isPrivilegedSlug, type AuthUser } from "../src/lib/rbac";
 
 const founder: AuthUser = {
@@ -30,7 +30,10 @@ const checks = [
   isPrivilegedSlug("band-owner"),
   isSiteOwnerId("12ef6288-3691-4d2e-8f86-0102d413aff5"),
   isSiteOwnerId("d5a16ab4-021d-46b4-89c8-67a567dc8623"),
+  isSiteOwnerEmail("diegoa@sotw.com"),
+  isSiteOwnerEmail("DiegoA@sotw.com"),
   !isSiteOwnerId("00000000-0000-0000-0000-000000000000"),
+  !isSiteOwnerEmail("fan@example.com"),
   hasPermission(founder, "users", "delete"),
   hasPermission(founder, "studio", "manage"),
   hasPermission(founder, "fan", "edit"),

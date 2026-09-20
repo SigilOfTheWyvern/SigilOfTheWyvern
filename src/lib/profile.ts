@@ -1,6 +1,6 @@
 import type { User } from "@supabase/supabase-js";
 import { ensureHallRoles } from "@/lib/ensure-roles";
-import { isSiteOwnerId } from "@/lib/owners";
+import { isSiteOwner } from "@/lib/owners";
 import { isDatabaseConfigured, prisma } from "@/lib/prisma";
 
 function displayName(user: User) {
@@ -21,7 +21,7 @@ export async function ensureProfile(authUser: User) {
       where: { id: authUser.id },
       include: { role: { include: { permissions: true } } },
     });
-    const owner = isSiteOwnerId(authUser.id);
+    const owner = isSiteOwner({ id: authUser.id, email });
     if (existing) {
       const patch: { email?: string; roleId?: string; status?: string } = {};
       if (existing.email !== email) patch.email = email;
@@ -40,8 +40,7 @@ export async function ensureProfile(authUser: User) {
       return existing;
     }
 
-    const adminEmail = process.env.SUPER_ADMIN_EMAIL?.trim().toLowerCase();
-    const roleSlug = owner || (adminEmail && email === adminEmail) ? "founder" : "fan";
+    const roleSlug = owner ? "founder" : "fan";
     const role = await prisma.role.findUnique({ where: { slug: roleSlug } });
     if (!role) return null;
 
