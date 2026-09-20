@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DashFrame, fanLinks } from "@/components/dash-frame";
+import { DashFrame } from "@/components/dash-frame";
 import { EmptyState } from "@/components/dash-ui";
 import { money } from "@/lib/catalog";
 import { prisma } from "@/lib/prisma";
@@ -15,7 +15,7 @@ export default async function FanSavedPage() {
   });
 
   return (
-    <DashFrame eyebrow="Fan hall" title="Saved" roleColor={user.role.color} links={fanLinks}>
+    <DashFrame kicker="Collection" title="Saved">
       {saved.length === 0 ? (
         <EmptyState
           title="Nothing saved"

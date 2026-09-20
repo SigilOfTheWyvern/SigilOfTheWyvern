@@ -1,4 +1,4 @@
-import { DashFrame, fanLinks } from "@/components/dash-frame";
+import { DashFrame } from "@/components/dash-frame";
 import { EmptyState } from "@/components/dash-ui";
 import { money } from "@/lib/catalog";
 import { prisma } from "@/lib/prisma";
@@ -15,7 +15,7 @@ export default async function FanOrdersPage() {
   });
 
   return (
-    <DashFrame eyebrow="Fan hall" title="Orders" roleColor={user.role.color} links={fanLinks}>
+    <DashFrame kicker="Collection" title="Orders">
       {orders.length === 0 ? (
         <EmptyState
           title="No orders"

@@ -33,6 +33,17 @@ export const ACTIONS = [
 export type Resource = (typeof RESOURCES)[number];
 export type Action = (typeof ACTIONS)[number];
 
+export const HALL_ROLE_SLUGS = ["founder", "developer", "band-member", "fan"] as const;
+export const PRIVILEGED_SLUGS = ["founder", "developer"] as const;
+
+export function isPrivilegedSlug(slug?: string | null) {
+  return Boolean(slug && (PRIVILEGED_SLUGS as readonly string[]).includes(slug));
+}
+
+export function isHallRoleSlug(slug?: string | null) {
+  return Boolean(slug && (HALL_ROLE_SLUGS as readonly string[]).includes(slug));
+}
+
 export const PERMISSION_GROUPS = [
   { id: "dashboard", label: "Dashboard", resources: ["studio", "analytics"] as const },
   { id: "users", label: "Users", resources: ["users"] as const },

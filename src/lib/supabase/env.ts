@@ -15,7 +15,7 @@ export function supabasePublicKey() {
 
 export function supabaseServiceKey() {
   const service = trim(process.env.SUPABASE_SERVICE_ROLE_KEY);
-  if (service.includes(".")) return service;
+  if (service.startsWith("sb_secret_") || service.includes(".")) return service;
   return "";
 }
 

@@ -24,6 +24,7 @@ create table if not exists "User" (
   name text not null,
   status text not null default 'active',
   "roleId" text not null references "Role"(id),
+  "imagePath" text,
   "createdAt" timestamp(3) not null default current_timestamp,
   "updatedAt" timestamp(3) not null default current_timestamp
 );
@@ -250,8 +251,10 @@ create table if not exists "MailingSubscriber" (
 
 insert into "Role" (id, name, slug, description, color, "isSystem")
 values
-  ('role_founder', 'Founder', 'founder', 'Founder of the mark. Full control.', '#c4a574', true),
-  ('role_fan', 'Fan', 'fan', 'The rite of the crowd.', '#e8e2da', true)
+  ('role_founder', 'Founder', 'founder', 'Founder of the mark. Full control of every door.', '#c4a574', true),
+  ('role_developer', 'Developer', 'developer', 'Builder of the seal. Same full control as Founder.', '#8f1218', true),
+  ('role_band_member', 'Band Member', 'band-member', 'Sees Studio. Edits the band page. Views music, tour, media, and news.', '#d6c4a0', true),
+  ('role_fan', 'Fan', 'fan', 'The rite of the crowd. Fan hall only.', '#e8e2da', true)
 on conflict (slug) do nothing;
 
 insert into "RolePermission" (id, "roleId", resource, action)
@@ -275,6 +278,47 @@ on conflict ("roleId", resource, action) do nothing;
 
 insert into "RolePermission" (id, "roleId", resource, action)
 select
+  'rp_developer_' || resource || '_' || action,
+  (select id from "Role" where slug = 'developer'),
+  resource,
+  action
+from (
+  values
+    ('studio'), ('analytics'), ('pages'), ('music'), ('merch'), ('tickets'),
+    ('tour'), ('news'), ('media'), ('band'), ('users'), ('roles'),
+    ('orders'), ('cms'), ('settings'), ('audit'), ('inbox'), ('fan')
+) as resources(resource)
+cross join (
+  values
+    ('view'), ('create'), ('edit'), ('delete'),
+    ('publish'), ('upload'), ('reorder'), ('manage')
+) as actions(action)
+on conflict ("roleId", resource, action) do nothing;
+
+insert into "RolePermission" (id, "roleId", resource, action)
+select
+  'rp_band_' || resource || '_' || action,
+  (select id from "Role" where slug = 'band-member'),
+  resource,
+  action
+from (
+  values
+    ('studio', 'view'),
+    ('band', 'view'),
+    ('band', 'edit'),
+    ('band', 'create'),
+    ('band', 'upload'),
+    ('music', 'view'),
+    ('tour', 'view'),
+    ('media', 'view'),
+    ('news', 'view'),
+    ('fan', 'view'),
+    ('fan', 'edit')
+) as perms(resource, action)
+on conflict ("roleId", resource, action) do nothing;
+
+insert into "RolePermission" (id, "roleId", resource, action)
+select
   'rp_fan_' || resource || '_' || action,
   (select id from "Role" where slug = 'fan'),
   resource,
@@ -287,6 +331,53 @@ from (
     ('tickets', 'view')
 ) as perms(resource, action)
 on conflict ("roleId", resource, action) do nothing;
+
+-- Full Founder ownership for the two site owner auth UIDs.
+do $$
+declare
+  founder_id text;
+begin
+  select id into founder_id from "Role" where slug = 'founder';
+  if founder_id is null then
+    null;
+  else
+    update "User"
+    set
+      "roleId" = founder_id,
+      status = 'active',
+      "updatedAt" = current_timestamp
+    where id in (
+      '12ef6288-3691-4d2e-8f86-0102d413aff5',
+      'd5a16ab4-021d-46b4-89c8-67a567dc8623'
+    );
+
+    if to_regclass('auth.users') is not null then
+      insert into "User" (id, email, name, status, "roleId", "createdAt", "updatedAt")
+      select
+        u.id::text,
+        lower(u.email),
+        coalesce(
+          nullif(trim(coalesce(u.raw_user_meta_data->>'full_name', u.raw_user_meta_data->>'name')), ''),
+          split_part(u.email, '@', 1)
+        ),
+        'active',
+        founder_id,
+        current_timestamp,
+        current_timestamp
+      from auth.users u
+      where u.id in (
+        '12ef6288-3691-4d2e-8f86-0102d413aff5'::uuid,
+        'd5a16ab4-021d-46b4-89c8-67a567dc8623'::uuid
+      )
+      on conflict (id) do update
+        set
+          email = excluded.email,
+          "roleId" = excluded."roleId",
+          status = 'active',
+          "updatedAt" = current_timestamp;
+    end if;
+  end if;
+end $$;
 
 do $$
 declare

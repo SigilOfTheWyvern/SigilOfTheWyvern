@@ -7,6 +7,8 @@ export const loginSchema = z.object({
 
 export const profileSchema = z.object({
   name: z.string().trim().min(2).max(80),
+  email: z.string().trim().email(),
+  imagePath: z.string().trim().max(500).optional(),
 });
 
 export const checkoutLineSchema = z.object({

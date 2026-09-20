@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { recordChange, writeAudit } from "@/lib/audit";
 import { ensureProfile } from "@/lib/profile";
 import { prisma } from "@/lib/prisma";
-import { ACTIONS, RESOURCES } from "@/lib/rbac-constants";
+import { ACTIONS, HALL_ROLE_SLUGS, RESOURCES, isHallRoleSlug } from "@/lib/rbac-constants";
+import { isSiteOwner } from "@/lib/owners";
 import { isFounder, isPrivilegedSlug, requirePermission } from "@/lib/rbac";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { slugify } from "@/lib/slug";
@@ -24,7 +25,7 @@ export async function saveUser(formData: FormData): Promise<void> {
   if (!parsed.success) return;
 
   const nextRole = await prisma.role.findUnique({ where: { id: parsed.data.roleId } });
-  if (!nextRole) return;
+  if (!nextRole || !isHallRoleSlug(nextRole.slug)) return;
   if (isPrivilegedSlug(nextRole.slug) && !isFounder(actor)) {
     return;
   }
@@ -35,6 +36,11 @@ export async function saveUser(formData: FormData): Promise<void> {
   });
   if (previous && isPrivilegedSlug(previous.role.slug) && !isFounder(actor)) {
     return;
+  }
+  if (isSiteOwner({ id, email: parsed.data.email })) {
+    if (parsed.data.status !== "active" || !isPrivilegedSlug(nextRole.slug)) {
+      return;
+    }
   }
   if (previous?.role.slug === "founder" && nextRole.slug !== "founder") {
     const founders = await prisma.user.count({ where: { role: { slug: "founder" } } });
@@ -94,6 +100,7 @@ export async function deleteUser(id: string): Promise<void> {
 
   const target = await prisma.user.findUnique({ where: { id }, include: { role: true } });
   if (!target) return;
+  if (isSiteOwner(target)) return;
   if (isPrivilegedSlug(target.role.slug) && !isFounder(actor)) {
     return;
   }
@@ -131,7 +138,9 @@ export async function deleteUser(id: string): Promise<void> {
 }
 
 export async function saveRole(formData: FormData): Promise<void> {
-  const actor = await requirePermission("roles", formData.get("id") ? "edit" : "create");
+  const id = String(formData.get("id") || "");
+  if (!id) return;
+  const actor = await requirePermission("roles", "edit");
   const parsed = roleSchema.safeParse({
     name: formData.get("name"),
     slug: String(formData.get("slug") ?? "").trim() || slugify(String(formData.get("name") ?? "")),
@@ -139,31 +148,24 @@ export async function saveRole(formData: FormData): Promise<void> {
     color: formData.get("color") || "#c4a574",
   });
   if (!parsed.success) return;
-  const id = String(formData.get("id") || "");
-  if (id) {
-    const existing = await prisma.role.findUnique({ where: { id } });
-    if (!existing) return;
-    if (existing.isSystem && parsed.data.slug !== existing.slug) {
-      return;
-    }
-  }
+  const existing = await prisma.role.findUnique({ where: { id } });
+  if (!existing) return;
+  if (!(HALL_ROLE_SLUGS as readonly string[]).includes(existing.slug)) return;
+  if (parsed.data.slug !== existing.slug) return;
   const data = {
     name: parsed.data.name,
     slug: parsed.data.slug,
     description: parsed.data.description,
     color: parsed.data.color ?? "#c4a574",
   };
-  const previous = id ? await prisma.role.findUnique({ where: { id } }) : null;
-  const role = id
-    ? await prisma.role.update({ where: { id }, data })
-    : await prisma.role.create({ data: { ...data, isSystem: false } });
+  const role = await prisma.role.update({ where: { id }, data });
   await recordChange({
     userId: actor.id,
-    action: id ? "edit" : "create",
+    action: "edit",
     resource: "roles",
     targetId: role.id,
     label: role.name,
-    before: previous ? { name: previous.name, slug: previous.slug, description: previous.description, color: previous.color } : null,
+    before: { name: existing.name, slug: existing.slug, description: existing.description, color: existing.color },
     after: { name: role.name, slug: role.slug, description: role.description, color: role.color },
   });
   if (formData.get("permissionsSet") === "1") {
@@ -188,8 +190,8 @@ export async function setRolePermissions(roleId: string, raw: string[]) {
   if (isPrivilegedSlug(role.slug) && !isFounder(actor)) {
     return { error: "Only a founder can change that role." };
   }
-  if (role.slug === "founder") {
-    return { error: "Founder permissions cannot be reduced." };
+  if (role.slug === "founder" || role.slug === "developer") {
+    return { error: "Founder and Developer permissions cannot be reduced." };
   }
 
   let allowed = raw.filter((entry) => {
@@ -225,38 +227,7 @@ export async function setRolePermissions(roleId: string, raw: string[]) {
 }
 
 export async function duplicateRole(id: string): Promise<void> {
-  const actor = await requirePermission("roles", "create");
-  const source = await prisma.role.findUnique({
-    where: { id },
-    include: { permissions: true },
-  });
-  if (!source) return;
-  const slug = `${source.slug}-copy-${Date.now().toString(36)}`;
-  const copy = await prisma.role.create({
-    data: {
-      name: `${source.name} copy`,
-      slug,
-      description: source.description,
-      color: source.color,
-      isSystem: false,
-      permissions: {
-        create: source.permissions.map((permission) => ({
-          resource: permission.resource,
-          action: permission.action,
-        })),
-      },
-    },
-  });
-  await recordChange({
-    userId: actor.id,
-    action: "create",
-    resource: "roles",
-    targetId: copy.id,
-    label: copy.name,
-    note: `Duplicated from ${source.name}`,
-    after: { name: copy.name, slug: copy.slug },
-  });
-  revalidatePath("/studio/roles");
+  void id;
 }
 
 export async function deleteRole(id: string): Promise<void> {
@@ -266,7 +237,7 @@ export async function deleteRole(id: string): Promise<void> {
     include: { _count: { select: { users: true } } },
   });
   if (!role) return;
-  if (role.slug === "founder" || role.slug === "fan" || isPrivilegedSlug(role.slug)) return;
+  if ((HALL_ROLE_SLUGS as readonly string[]).includes(role.slug)) return;
   if (!isFounder(actor)) {
     if (role.isSystem) return;
     if (role._count.users > 0) return;

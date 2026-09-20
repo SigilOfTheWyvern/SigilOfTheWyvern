@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { DashFrame, fanLinks } from "@/components/dash-frame";
+import { DashFrame } from "@/components/dash-frame";
 import { EmptyState } from "@/components/dash-ui";
 import { prisma } from "@/lib/prisma";
 import { ticketQr } from "@/lib/qr";
@@ -24,7 +24,7 @@ export default async function FanTicketsPage() {
   const qrs = Object.fromEntries(codes.map((item) => [item.id, item.qr]));
 
   return (
-    <DashFrame eyebrow="Fan hall" title="Tickets" roleColor={user.role.color} links={fanLinks}>
+    <DashFrame kicker="Collection" title="Tickets">
       {tickets.length === 0 ? (
         <EmptyState
           title="No tickets"

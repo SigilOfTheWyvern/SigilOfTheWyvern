@@ -11,7 +11,11 @@ const MAX = 4 * 1024 * 1024;
 
 export async function POST(request: Request) {
   const user = await getAuthUser();
-  const canUpload = user && RESOURCES.some((resource) => hasPermission(user, resource, "upload"));
+  const canUpload =
+    user &&
+    (hasPermission(user, "fan", "edit") ||
+      hasPermission(user, "studio", "view") ||
+      RESOURCES.some((resource) => hasPermission(user, resource, "upload")));
   if (!user || !canUpload) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }

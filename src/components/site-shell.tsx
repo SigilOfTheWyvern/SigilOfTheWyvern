@@ -30,7 +30,7 @@ export function SiteShell({
   const studio = pathname.startsWith("/studio");
   const fan = pathname.startsWith("/fan");
 
-  if (studio) {
+  if (studio || fan) {
     return (
       <div className="studio-skin">
         <a href="#main-content" className="skip-link">
@@ -44,7 +44,7 @@ export function SiteShell({
   return (
     <>
       <SiteHeader account={account} siteName={siteName} tourLabel={tourLabel} nav={nav} />
-      <div id="main-content" tabIndex={-1} className={fan ? "hall-shell" : ""}>
+      <div id="main-content" tabIndex={-1}>
         {children}
       </div>
       {fan ? null : (

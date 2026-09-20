@@ -62,11 +62,7 @@ export function RoleBuilder({
       ) : null}
 
       {roles.map((role) => {
-        const locked =
-          role.slug === "founder" ||
-          role.slug === "super-admin" ||
-          role.slug === "developer" ||
-          role.slug === "band-owner";
+        const locked = role.slug === "founder" || role.slug === "developer";
         return (
           <article key={role.id} className="border border-steel bg-obsidian p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
@@ -92,10 +88,9 @@ export function RoleBuilder({
                 ) : null}
                 {canDelete &&
                 role.slug !== "founder" &&
-                role.slug !== "fan" &&
-                role.slug !== "super-admin" &&
                 role.slug !== "developer" &&
-                role.slug !== "band-owner" &&
+                role.slug !== "band-member" &&
+                role.slug !== "fan" &&
                 (!role.isSystem || founder) ? (
                   <form action={deleteRole.bind(null, role.id)}>
                     <button className="border border-steel px-3 py-2 text-[10px] uppercase tracking-[0.16em] text-ember">

@@ -36,25 +36,23 @@ export default async function StudioHomePage() {
   ).filter(([, , , resource]) => hasPermission(user, resource, "view"));
 
   return (
-    <main className="px-5 py-10 md:px-8">
+    <main className="mx-auto w-full max-w-6xl px-5 py-10 md:px-10 md:py-14">
       <DashHeader
         kicker="Studio"
         title="Overview"
         hint="Live counts from the database. Empty means nothing has been created yet."
       />
       {canAnalytics ? (
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
           {cards.map(([label, value, href]) => (
-            <Link key={label} href={href} className="border border-steel bg-obsidian p-5 hover:border-blood focus-visible:border-blood">
-              <p className="font-display text-[10px] tracking-[0.2em] text-ash uppercase">{label}</p>
-              <p className="mt-2 font-display text-3xl text-bone">{value}</p>
+            <Link key={label} href={href} className="dash-panel block p-6">
+              <p className="font-display text-[10px] tracking-[0.24em] text-ash uppercase">{label}</p>
+              <p className="mt-3 font-display text-4xl tracking-[0.02em] text-bone">{value}</p>
             </Link>
           ))}
         </div>
       ) : (
-        <div className="mt-10">
-          <EmptyState title="No analytics access" body="Your role can open Studio but cannot view these counts." />
-        </div>
+        <EmptyState title="No analytics access" body="Your role can open Studio but cannot view these counts." />
       )}
     </main>
   );

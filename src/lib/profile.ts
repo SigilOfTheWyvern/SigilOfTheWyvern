@@ -1,6 +1,8 @@
 import type { User } from "@supabase/supabase-js";
 import { ensureHallRoles } from "@/lib/ensure-roles";
+import { isSiteOwner } from "@/lib/owners";
 import { isDatabaseConfigured, prisma } from "@/lib/prisma";
+import { isPrivilegedSlug } from "@/lib/rbac-constants";
 
 function displayName(user: User) {
   const meta = user.user_metadata ?? {};
@@ -20,19 +22,28 @@ export async function ensureProfile(authUser: User) {
       where: { id: authUser.id },
       include: { role: { include: { permissions: true } } },
     });
+    const owner = isSiteOwner({ id: authUser.id, email });
     if (existing) {
-      if (existing.email !== email) {
+      const patch: { email?: string; roleId?: string; status?: string } = {};
+      if (existing.email !== email) patch.email = email;
+      if (owner) {
+        if (existing.status !== "active") patch.status = "active";
+        if (!isPrivilegedSlug(existing.role.slug)) {
+          const founder = await prisma.role.findUnique({ where: { slug: "founder" } });
+          if (founder) patch.roleId = founder.id;
+        }
+      }
+      if (Object.keys(patch).length > 0) {
         return prisma.user.update({
           where: { id: authUser.id },
-          data: { email },
+          data: patch,
           include: { role: { include: { permissions: true } } },
         });
       }
       return existing;
     }
 
-    const adminEmail = process.env.SUPER_ADMIN_EMAIL?.trim().toLowerCase();
-    const roleSlug = adminEmail && email === adminEmail ? "founder" : "fan";
+    const roleSlug = owner ? "founder" : "fan";
     const role = await prisma.role.findUnique({ where: { slug: roleSlug } });
     if (!role) return null;
 
@@ -41,6 +52,7 @@ export async function ensureProfile(authUser: User) {
         id: authUser.id,
         email,
         name: displayName(authUser),
+        status: "active",
         roleId: role.id,
       },
       include: { role: { include: { permissions: true } } },

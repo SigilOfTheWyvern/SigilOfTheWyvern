@@ -2,15 +2,20 @@ import { deleteUser, saveUser, syncSupabaseUsers } from "@/actions/users";
 import { ConfirmButton } from "@/components/confirm-button";
 import { DashHeader, EmptyState } from "@/components/dash-ui";
 import { inputClass } from "@/components/easy-fields";
+import { ensureSystemRoles } from "@/lib/ensure-roles";
 import { prisma } from "@/lib/prisma";
+import { HALL_ROLE_SLUGS } from "@/lib/rbac-constants";
 import { hasPermission, requirePermission } from "@/lib/rbac";
 
 export default async function StudioUsersPage() {
   const actor = await requirePermission("users", "view");
+  await ensureSystemRoles();
+  const order: string[] = [...HALL_ROLE_SLUGS];
   const [users, roles] = await Promise.all([
     prisma.user.findMany({ include: { role: true }, orderBy: { createdAt: "desc" } }),
-    prisma.role.findMany({ orderBy: { name: "asc" } }),
+    prisma.role.findMany({ where: { slug: { in: order } } }),
   ]);
+  roles.sort((left, right) => order.indexOf(left.slug) - order.indexOf(right.slug));
   const canEdit = hasPermission(actor, "users", "edit");
   const canSync = hasPermission(actor, "users", "create");
   const canDelete = hasPermission(actor, "users", "delete");
@@ -20,7 +25,7 @@ export default async function StudioUsersPage() {
       <DashHeader
         kicker="Access"
         title="Users"
-        hint="Logins live in Supabase. Roles here decide Studio, Hall, and every other door."
+        hint="Only Founder, Developer, Band Member, and Fan. Staff, Viewer, Manager, and Administrator are not used."
         action={
           canSync ? (
             <form action={syncSupabaseUsers}>
