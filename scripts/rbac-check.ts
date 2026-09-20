@@ -1,5 +1,7 @@
-import { isSiteOwner, isSiteOwnerEmail, isSiteOwnerId } from "../src/lib/owners";
+import { isSiteOwner, isSiteOwnerId, isSuperAdminEmail } from "../src/lib/owners";
 import { hasPermission, isFounder, isPrivilegedSlug, type AuthUser } from "../src/lib/rbac";
+
+process.env.SUPER_ADMIN_EMAIL = "owner-test@example.com";
 
 const founder: AuthUser = {
   id: "1",
@@ -30,10 +32,11 @@ const checks = [
   isPrivilegedSlug("band-owner"),
   isSiteOwnerId("12ef6288-3691-4d2e-8f86-0102d413aff5"),
   isSiteOwnerId("d5a16ab4-021d-46b4-89c8-67a567dc8623"),
-  isSiteOwnerEmail("diegoa@sotw.com"),
-  isSiteOwnerEmail("DiegoA@sotw.com"),
+  isSuperAdminEmail("owner-test@example.com"),
+  isSuperAdminEmail("Owner-Test@example.com"),
+  isSiteOwner({ id: "x", email: "owner-test@example.com" }),
   !isSiteOwnerId("00000000-0000-0000-0000-000000000000"),
-  !isSiteOwnerEmail("fan@example.com"),
+  !isSuperAdminEmail("fan@example.com"),
   hasPermission(founder, "users", "delete"),
   hasPermission(founder, "studio", "manage"),
   hasPermission(founder, "fan", "edit"),
