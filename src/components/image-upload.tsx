@@ -6,10 +6,12 @@ export function ImageUpload({
   name,
   defaultValue = "",
   label = "Photo",
+  compact = false,
 }: {
   name: string;
   defaultValue?: string;
   label?: string;
+  compact?: boolean;
 }) {
   const [path, setPath] = useState(defaultValue);
   const [error, setError] = useState<string | null>(null);
@@ -57,9 +59,15 @@ export function ImageUpload({
       >
         {path ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={path} alt="" className="h-40 w-full object-cover" />
+          <img
+            src={path}
+            alt=""
+            className={compact ? "mx-auto h-32 w-32 object-cover" : "h-40 w-full object-cover"}
+          />
         ) : (
-          <div className="flex h-40 items-center justify-center px-4 text-center text-xs text-ash">
+          <div
+            className={`flex items-center justify-center px-4 text-center text-xs text-ash ${compact ? "h-32" : "h-40"}`}
+          >
             {busy ? "Uploading…" : "Drop a photo here, or choose one. No name or link needed."}
           </div>
         )}

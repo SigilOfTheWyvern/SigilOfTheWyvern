@@ -1,5 +1,5 @@
 import { markNotificationsRead } from "@/actions/fan";
-import { DashFrame, fanLinks } from "@/components/dash-frame";
+import { DashFrame } from "@/components/dash-frame";
 import { EmptyState } from "@/components/dash-ui";
 import { prisma } from "@/lib/prisma";
 import { hasPermission, requireUser } from "@/lib/rbac";
@@ -15,7 +15,7 @@ export default async function FanNoticesPage() {
   });
 
   return (
-    <DashFrame eyebrow="Fan hall" title="Notices" roleColor={user.role.color} links={fanLinks}>
+    <DashFrame kicker="Account" title="Notices">
       {notices.length === 0 ? (
         <EmptyState title="No notices" body="Nothing has been sent to this account." />
       ) : (

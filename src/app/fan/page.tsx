@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DashFrame, fanLinks } from "@/components/dash-frame";
+import { DashFrame } from "@/components/dash-frame";
 import { EmptyState } from "@/components/dash-ui";
 import { money } from "@/lib/catalog";
 import { prisma } from "@/lib/prisma";
@@ -32,11 +32,8 @@ export default async function FanHomePage() {
   }
 
   return (
-    <DashFrame eyebrow="Fan hall" title={user.name} roleColor={user.role.color} links={fanLinks}>
-      <p className="text-sm text-ash">
-        {user.email} · {user.role.name}
-      </p>
-      <div className="mt-8 grid gap-4 sm:grid-cols-3">
+    <DashFrame kicker="Fan hall" title="Overview">
+      <div className="grid gap-4 sm:grid-cols-3">
         <Stat label="Orders" value={String(orderCount)} href="/fan/orders" />
         <Stat label="Tickets" value={String(tickets)} href="/fan/tickets" />
         <Stat label="Unread" value={String(notices)} href="/fan/notifications" />

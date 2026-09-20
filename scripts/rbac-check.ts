@@ -8,6 +8,7 @@ const founder: AuthUser = {
   email: "a@b.c",
   name: "F",
   status: "active",
+  imagePath: null,
   role: { id: "r", name: "Founder", slug: "founder", color: "#000", permissions: [] },
 };
 const editor: AuthUser = {

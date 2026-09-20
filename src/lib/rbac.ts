@@ -12,6 +12,7 @@ export type AuthUser = {
   email: string;
   name: string;
   status: string;
+  imagePath: string | null;
   role: {
     id: string;
     name: string;
@@ -29,6 +30,10 @@ export function isPrivilegedSlug(slug?: string | null) {
 
 export function isFounder(user: AuthUser | null | undefined) {
   return isPrivilegedSlug(user?.role.slug);
+}
+
+export function canAccessFan(user: AuthUser | null | undefined) {
+  return hasPermission(user, "fan", "view");
 }
 
 export function canAccessStudio(user: AuthUser | null | undefined) {
@@ -77,6 +82,7 @@ export async function getAuthUser(): Promise<AuthUser | null> {
       email: user.email,
       name: user.name,
       status: user.status,
+      imagePath: user.imagePath ?? null,
       role: {
         id: user.role.id,
         name: user.role.name,
@@ -197,6 +203,11 @@ const STUDIO_NAV: { id: string; label: string; items: StudioNavLink[] }[] = [
       { href: "/studio/inbox", label: "Inbox", resource: "inbox", action: "view" },
       { href: "/studio/audit", label: "Audit", resource: "audit", action: "view" },
     ],
+  },
+  {
+    id: "account",
+    label: "Account",
+    items: [{ href: "/studio/profile", label: "Profile", resource: "studio", action: "view" }],
   },
 ];
 

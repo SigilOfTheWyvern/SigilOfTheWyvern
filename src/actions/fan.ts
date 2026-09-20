@@ -3,24 +3,50 @@
 import { revalidatePath } from "next/cache";
 import { writeAudit } from "@/lib/audit";
 import { prisma } from "@/lib/prisma";
-import { requirePermission } from "@/lib/rbac";
+import { requirePermission, requireUser } from "@/lib/rbac";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { profileSchema } from "@/lib/validations";
 
-export async function updateProfile(formData: FormData): Promise<void> {
-  const user = await requirePermission("fan", "edit");
-  const parsed = profileSchema.safeParse({ name: formData.get("name") });
-  if (!parsed.success) return;
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { name: parsed.data.name },
-  });
-  await writeAudit({ userId: user.id, action: "edit", resource: "fan", targetId: user.id });
+function revalidateProfiles() {
   revalidatePath("/fan/profile");
+  revalidatePath("/studio/profile");
+  revalidatePath("/fan");
+  revalidatePath("/studio");
 }
 
-export async function changePassword(formData: FormData): Promise<void> {
-  const user = await requirePermission("fan", "edit");
+export async function updateProfile(formData: FormData) {
+  const user = await requireUser();
+  const parsed = profileSchema.safeParse({
+    name: formData.get("name"),
+    email: formData.get("email"),
+    imagePath: formData.get("imagePath") || "",
+  });
+  if (!parsed.success) return;
+  const nextEmail = parsed.data.email.toLowerCase();
+  if (nextEmail !== user.email) {
+    const taken = await prisma.user.findFirst({
+      where: { email: nextEmail, NOT: { id: user.id } },
+    });
+    if (taken) return;
+    const supabase = await createSupabaseServerClient();
+    const { error } = await supabase.auth.updateUser({ email: nextEmail });
+    if (error) return;
+  }
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      name: parsed.data.name,
+      email: nextEmail,
+      imagePath: parsed.data.imagePath || null,
+    },
+  });
+  await writeAudit({ userId: user.id, action: "edit", resource: "fan", targetId: user.id });
+  revalidateProfiles();
+}
+
+export async function changePassword(formData: FormData) {
+  const user = await requireUser();
   const current = String(formData.get("current") ?? "");
   const next = String(formData.get("next") ?? "");
   if (next.length < 8) return;
@@ -35,7 +61,14 @@ export async function changePassword(formData: FormData): Promise<void> {
   const { error } = await supabase.auth.updateUser({ password: next });
   if (error) return;
 
-  await writeAudit({ userId: user.id, action: "edit", resource: "fan", targetId: user.id, meta: "password" });
+  await writeAudit({
+    userId: user.id,
+    action: "edit",
+    resource: "fan",
+    targetId: user.id,
+    meta: "password",
+  });
+  revalidateProfiles();
 }
 
 export async function toggleFavorite(productId: string) {

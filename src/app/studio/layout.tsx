@@ -1,6 +1,6 @@
 import { StudioNav } from "@/components/studio-nav";
 import { prisma } from "@/lib/prisma";
-import { requireStudio, studioNav } from "@/lib/rbac";
+import { canAccessFan, canAccessStudio, requireStudio, studioNav } from "@/lib/rbac";
 
 export const dynamic = "force-dynamic";
 
@@ -18,8 +18,14 @@ export default async function StudioLayout({ children }: { children: React.React
   return (
     <div className="studio-shell">
       <StudioNav
-        role={`${user.name} · ${user.role.name}`}
+        eyebrow="Backstage"
+        brand="Hall"
+        name={user.name}
+        roleName={user.role.name}
         roleColor={roleColor}
+        imagePath={user.imagePath}
+        showHall={canAccessStudio(user)}
+        showFan={canAccessFan(user)}
         groups={groups}
         links={groups}
       />

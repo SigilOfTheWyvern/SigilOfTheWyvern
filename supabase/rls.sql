@@ -24,6 +24,7 @@ create table if not exists "User" (
   name text not null,
   status text not null default 'active',
   "roleId" text not null references "Role"(id),
+  "imagePath" text,
   "createdAt" timestamp(3) not null default current_timestamp,
   "updatedAt" timestamp(3) not null default current_timestamp
 );
