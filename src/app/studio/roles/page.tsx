@@ -17,7 +17,7 @@ export default async function StudioRolesPage() {
       <DashHeader
         kicker="Access"
         title="Roles"
-        hint="Permissions belong to the role. Founders always have every door. Custom roles start empty until you check boxes."
+        hint="Permissions belong to the role. Founder and Developer always have every door on this site. Custom roles start empty until you check boxes."
       />
       <div className="mt-10">
         <RoleBuilder

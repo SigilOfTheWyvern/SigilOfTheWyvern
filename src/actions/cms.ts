@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { recordChange } from "@/lib/audit";
 import { prisma } from "@/lib/prisma";
-import { requirePermission, type Action, type Resource } from "@/lib/rbac";
+import { hasPermission, requirePermission, requireUser, type Action, type Resource } from "@/lib/rbac";
 import { revalidateSite } from "@/lib/revalidate";
 import { HOME_FIELDS } from "@/lib/site-copy";
 import { removeStoredFile } from "@/lib/storage";
@@ -453,7 +453,10 @@ export async function deleteSection(id: string) {
 }
 
 export async function setOrderStatus(formData: FormData) {
-  const user = await requirePermission("orders", "manage");
+  const user = await requireUser();
+  if (!hasPermission(user, "orders", "manage") && !hasPermission(user, "orders", "edit")) {
+    await requirePermission("orders", "manage");
+  }
   const id = String(formData.get("id") ?? "");
   const status = String(formData.get("status") ?? "");
   if (!id || !status) return;

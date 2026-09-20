@@ -33,6 +33,12 @@ export const ACTIONS = [
 export type Resource = (typeof RESOURCES)[number];
 export type Action = (typeof ACTIONS)[number];
 
+export const PRIVILEGED_SLUGS = ["founder", "super-admin", "developer", "band-owner"] as const;
+
+export function isPrivilegedSlug(slug?: string | null) {
+  return Boolean(slug && (PRIVILEGED_SLUGS as readonly string[]).includes(slug));
+}
+
 export const PERMISSION_GROUPS = [
   { id: "dashboard", label: "Dashboard", resources: ["studio", "analytics"] as const },
   { id: "users", label: "Users", resources: ["users"] as const },

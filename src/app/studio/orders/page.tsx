@@ -11,7 +11,7 @@ export default async function StudioOrdersPage() {
     orderBy: { createdAt: "desc" },
     take: 80,
   });
-  const canManage = hasPermission(user, "orders", "manage");
+  const canManage = hasPermission(user, "orders", "manage") || hasPermission(user, "orders", "edit");
 
   return (
     <main className="px-5 py-10 md:px-8">

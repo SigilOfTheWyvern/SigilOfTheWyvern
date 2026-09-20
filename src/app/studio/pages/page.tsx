@@ -2,11 +2,13 @@ import { deleteSection, publishPage, reorderSection, saveSection } from "@/actio
 import { DashHeader, EmptyState } from "@/components/dash-ui";
 import { Field, SiteLinkSelect, areaClass, inputClass } from "@/components/easy-fields";
 import { ImageUpload } from "@/components/image-upload";
+import { ensureStudioHomePage } from "@/lib/ensure-roles";
 import { prisma } from "@/lib/prisma";
 import { hasPermission, requirePermission } from "@/lib/rbac";
 
 export default async function StudioPagesPage() {
   const user = await requirePermission("pages", "view");
+  await ensureStudioHomePage();
   const page = await prisma.sitePage.findUnique({
     where: { slug: "home" },
     include: { sections: { orderBy: { sort: "asc" } } },
@@ -15,6 +17,7 @@ export default async function StudioPagesPage() {
   const canEdit = hasPermission(user, "pages", "edit");
   const canDelete = hasPermission(user, "pages", "delete");
   const canPublish = hasPermission(user, "pages", "publish");
+  const canReorder = hasPermission(user, "pages", "reorder");
 
   return (
     <main className="px-5 py-10 md:px-8">
@@ -72,12 +75,16 @@ export default async function StudioPagesPage() {
                     <button className="w-fit border border-blood px-3 py-2 text-xs uppercase">Save block</button>
                   </form>
                   <div className="mt-3 flex gap-3">
-                    <form action={reorderSection.bind(null, section.id, "up")}>
-                      <button className="text-xs uppercase text-mist">Up</button>
-                    </form>
-                    <form action={reorderSection.bind(null, section.id, "down")}>
-                      <button className="text-xs uppercase text-mist">Down</button>
-                    </form>
+                    {canReorder ? (
+                      <>
+                        <form action={reorderSection.bind(null, section.id, "up")}>
+                          <button className="text-xs uppercase text-mist">Up</button>
+                        </form>
+                        <form action={reorderSection.bind(null, section.id, "down")}>
+                          <button className="text-xs uppercase text-mist">Down</button>
+                        </form>
+                      </>
+                    ) : null}
                     {canDelete ? (
                       <form action={deleteSection.bind(null, section.id)}>
                         <button className="text-xs uppercase text-ember">Delete</button>

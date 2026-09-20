@@ -2,10 +2,10 @@ import { redirect } from "next/navigation";
 import { writeAudit } from "@/lib/audit";
 import { ensureProfile } from "@/lib/profile";
 import { createSupabaseServerClient, isSupabaseConfigured } from "@/lib/supabase/server";
-import type { Action, Resource } from "@/lib/rbac-constants";
+import { isPrivilegedSlug, type Action, type Resource } from "@/lib/rbac-constants";
 
 export type { Action, Resource };
-export { ACTIONS, RESOURCES } from "@/lib/rbac-constants";
+export { ACTIONS, RESOURCES, isPrivilegedSlug } from "@/lib/rbac-constants";
 
 export type AuthUser = {
   id: string;
@@ -21,12 +21,6 @@ export type AuthUser = {
     permissions: { resource: string; action: string }[];
   };
 };
-
-const PRIVILEGED_SLUGS = new Set(["founder", "super-admin", "developer", "band-owner"]);
-
-export function isPrivilegedSlug(slug?: string | null) {
-  return Boolean(slug && PRIVILEGED_SLUGS.has(slug));
-}
 
 export function isFounder(user: AuthUser | null | undefined) {
   return isPrivilegedSlug(user?.role.slug);

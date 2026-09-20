@@ -1,4 +1,5 @@
 import { StudioNav } from "@/components/studio-nav";
+import { ensureHallRoles } from "@/lib/ensure-roles";
 import { prisma } from "@/lib/prisma";
 import { canAccessFan, canAccessStudio, requireStudio, studioNav } from "@/lib/rbac";
 
@@ -6,6 +7,11 @@ export const dynamic = "force-dynamic";
 
 export default async function StudioLayout({ children }: { children: React.ReactNode }) {
   const user = await requireStudio();
+  try {
+    await ensureHallRoles();
+  } catch (error) {
+    console.error("studio.roles", error);
+  }
   const groups = studioNav(user);
   let roleColor = user.role.color;
   try {

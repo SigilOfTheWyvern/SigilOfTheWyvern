@@ -2,6 +2,7 @@ import type { User } from "@supabase/supabase-js";
 import { ensureHallRoles } from "@/lib/ensure-roles";
 import { isSiteOwner } from "@/lib/owners";
 import { isDatabaseConfigured, prisma } from "@/lib/prisma";
+import { isPrivilegedSlug } from "@/lib/rbac-constants";
 
 function displayName(user: User) {
   const meta = user.user_metadata ?? {};
@@ -26,9 +27,11 @@ export async function ensureProfile(authUser: User) {
       const patch: { email?: string; roleId?: string; status?: string } = {};
       if (existing.email !== email) patch.email = email;
       if (owner) {
-        const founder = await prisma.role.findUnique({ where: { slug: "founder" } });
-        if (founder && existing.roleId !== founder.id) patch.roleId = founder.id;
         if (existing.status !== "active") patch.status = "active";
+        if (!isPrivilegedSlug(existing.role.slug)) {
+          const founder = await prisma.role.findUnique({ where: { slug: "founder" } });
+          if (founder) patch.roleId = founder.id;
+        }
       }
       if (Object.keys(patch).length > 0) {
         return prisma.user.update({
