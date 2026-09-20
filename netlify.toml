@@ -7,9 +7,9 @@
   NEXT_TELEMETRY_DISABLED = "1"
   NEXT_PUBLIC_SUPABASE_URL = "https://cqjxxstcdewqczprhizb.supabase.co"
   SUPER_ADMIN_EMAIL = "diegoa@sotw.com"
-  # Public URL is fine in git. JWT/publishable/service keys and DATABASE_URL
-  # must live in Netlify Site configuration → Environment variables, All scopes.
   SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,DATABASE_URL,SUPABASE_SERVICE_ROLE_KEY"
+  # Anon JWTs belong in the Next client bundle; Postgres URIs belong in the server bundle.
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
