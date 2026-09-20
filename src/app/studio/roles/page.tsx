@@ -7,9 +7,15 @@ import { hasPermission, isFounder, requirePermission } from "@/lib/rbac";
 export default async function StudioRolesPage() {
   const user = await requirePermission("roles", "view");
   await ensureSystemRoles();
-  const roles = await prisma.role.findMany({
-    include: { permissions: true, _count: { select: { users: true } } },
-    orderBy: { name: "asc" },
+  const order = ["founder", "developer", "band-member", "fan"];
+  const roles = (
+    await prisma.role.findMany({
+      include: { permissions: true, _count: { select: { users: true } } },
+    })
+  ).sort((left, right) => {
+    const leftIndex = order.indexOf(left.slug);
+    const rightIndex = order.indexOf(right.slug);
+    return (leftIndex === -1 ? 99 : leftIndex) - (rightIndex === -1 ? 99 : rightIndex);
   });
 
   return (
@@ -17,7 +23,7 @@ export default async function StudioRolesPage() {
       <DashHeader
         kicker="Access"
         title="Roles"
-        hint="Permissions belong to the role. Founder and Developer always have every door on this site. Custom roles start empty until you check boxes."
+        hint="Only four roles: Founder, Developer, Band Member, and Fan. Founder and Developer hold every permission."
       />
       <div className="mt-10">
         <RoleBuilder
@@ -31,9 +37,9 @@ export default async function StudioRolesPage() {
             userCount: role._count.users,
             permissions: role.permissions.map((permission) => `${permission.resource}:${permission.action}`),
           }))}
-          canCreate={hasPermission(user, "roles", "create")}
+          canCreate={false}
           canEdit={hasPermission(user, "roles", "edit")}
-          canDelete={hasPermission(user, "roles", "delete")}
+          canDelete={false}
           canManage={hasPermission(user, "roles", "manage")}
           founder={isFounder(user)}
         />

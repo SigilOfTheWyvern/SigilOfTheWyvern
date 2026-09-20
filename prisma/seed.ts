@@ -66,107 +66,33 @@ async function main() {
     {
       name: "Founder",
       slug: "founder",
-      description: "Founder of the mark. Full control.",
-      perms: ALL_RESOURCES.flatMap((resource) => pairs(resource, ALL_ACTIONS)),
-    },
-    {
-      name: "Super Admin",
-      slug: "super-admin",
-      description: "Full control of the seal.",
+      description: "Founder of the mark. Full control of every door.",
       perms: ALL_RESOURCES.flatMap((resource) => pairs(resource, ALL_ACTIONS)),
     },
     {
       name: "Developer",
       slug: "developer",
-      description: "Builder of the seal. Same doors as Founder.",
+      description: "Builder of the seal. Same full control as Founder.",
       perms: ALL_RESOURCES.flatMap((resource) => pairs(resource, ALL_ACTIONS)),
-    },
-    {
-      name: "Band Owner",
-      slug: "band-owner",
-      description: "Owner of the mark. Almost all doors open.",
-      perms: ALL_RESOURCES.flatMap((resource) =>
-        pairs(resource, ALL_ACTIONS.filter((action) => action !== "manage" || resource !== "roles")),
-      ),
-    },
-    {
-      name: "Manager",
-      slug: "manager",
-      description: "Runs the house. Users and content, not role law.",
-      perms: [
-        ...pairs("studio", ["view", "manage"]),
-        ...["pages", "music", "merch", "tickets", "tour", "news", "media", "band", "orders", "users", "cms"].flatMap(
-          (resource) => pairs(resource, ALL_ACTIONS),
-        ),
-        ...pairs("audit", ["view"]),
-        ...pairs("fan", ["view"]),
-      ],
-    },
-    {
-      name: "Content Manager",
-      slug: "content-manager",
-      description: "Pages, news, media. Merch view only. No tickets.",
-      perms: [
-        ...pairs("studio", ["view"]),
-        ...pairs("pages", ["view", "edit", "upload", "reorder", "publish"]),
-        ...pairs("news", ALL_ACTIONS),
-        ...pairs("media", ALL_ACTIONS),
-        ...pairs("music", ALL_ACTIONS),
-        ...pairs("band", ["view", "edit", "upload"]),
-        ...pairs("cms", ["view", "edit", "publish"]),
-        ...pairs("merch", ["view"]),
-      ],
-    },
-    {
-      name: "Merch Manager",
-      slug: "merch-manager",
-      description: "Relics, inventory, orders.",
-      perms: [
-        ...pairs("studio", ["view"]),
-        ...pairs("merch", ALL_ACTIONS),
-        ...pairs("orders", ["view", "edit", "manage"]),
-        ...pairs("media", ["view", "upload"]),
-      ],
-    },
-    {
-      name: "Tour Manager",
-      slug: "tour-manager",
-      description: "Dates, ticket types, inventory.",
-      perms: [
-        ...pairs("studio", ["view"]),
-        ...pairs("tour", ALL_ACTIONS),
-        ...pairs("tickets", ALL_ACTIONS),
-        ...pairs("orders", ["view"]),
-      ],
-    },
-    {
-      name: "Editor",
-      slug: "editor",
-      description: "Drafts and edits. Cannot publish or delete.",
-      perms: [
-        ...pairs("studio", ["view"]),
-        ...["pages", "news", "music", "band", "media"].flatMap((resource) =>
-          pairs(resource, ["view", "create", "edit"]),
-        ),
-      ],
     },
     {
       name: "Band Member",
       slug: "band-member",
-      description: "Sees the house. Edits the band page.",
+      description: "Sees Studio. Edits the band page. Views music, tour, media, and news.",
       perms: [
         ...pairs("studio", ["view"]),
-        ...pairs("band", ["view", "edit"]),
+        ...pairs("band", ["view", "edit", "create", "upload"]),
         ...pairs("music", ["view"]),
         ...pairs("tour", ["view"]),
         ...pairs("media", ["view"]),
         ...pairs("news", ["view"]),
+        ...pairs("fan", ["view", "edit"]),
       ],
     },
     {
       name: "Fan",
       slug: "fan",
-      description: "The rite of the crowd.",
+      description: "The rite of the crowd. Fan hall only.",
       perms: [...pairs("fan", ["view", "edit"]), ...pairs("orders", ["view"]), ...pairs("tickets", ["view"])],
     },
   ];

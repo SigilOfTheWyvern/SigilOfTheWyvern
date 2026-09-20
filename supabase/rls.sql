@@ -251,8 +251,10 @@ create table if not exists "MailingSubscriber" (
 
 insert into "Role" (id, name, slug, description, color, "isSystem")
 values
-  ('role_founder', 'Founder', 'founder', 'Founder of the mark. Full control.', '#c4a574', true),
-  ('role_fan', 'Fan', 'fan', 'The rite of the crowd.', '#e8e2da', true)
+  ('role_founder', 'Founder', 'founder', 'Founder of the mark. Full control of every door.', '#c4a574', true),
+  ('role_developer', 'Developer', 'developer', 'Builder of the seal. Same full control as Founder.', '#8f1218', true),
+  ('role_band_member', 'Band Member', 'band-member', 'Sees Studio. Edits the band page. Views music, tour, media, and news.', '#d6c4a0', true),
+  ('role_fan', 'Fan', 'fan', 'The rite of the crowd. Fan hall only.', '#e8e2da', true)
 on conflict (slug) do nothing;
 
 insert into "RolePermission" (id, "roleId", resource, action)
@@ -272,6 +274,47 @@ cross join (
     ('view'), ('create'), ('edit'), ('delete'),
     ('publish'), ('upload'), ('reorder'), ('manage')
 ) as actions(action)
+on conflict ("roleId", resource, action) do nothing;
+
+insert into "RolePermission" (id, "roleId", resource, action)
+select
+  'rp_developer_' || resource || '_' || action,
+  (select id from "Role" where slug = 'developer'),
+  resource,
+  action
+from (
+  values
+    ('studio'), ('analytics'), ('pages'), ('music'), ('merch'), ('tickets'),
+    ('tour'), ('news'), ('media'), ('band'), ('users'), ('roles'),
+    ('orders'), ('cms'), ('settings'), ('audit'), ('inbox'), ('fan')
+) as resources(resource)
+cross join (
+  values
+    ('view'), ('create'), ('edit'), ('delete'),
+    ('publish'), ('upload'), ('reorder'), ('manage')
+) as actions(action)
+on conflict ("roleId", resource, action) do nothing;
+
+insert into "RolePermission" (id, "roleId", resource, action)
+select
+  'rp_band_' || resource || '_' || action,
+  (select id from "Role" where slug = 'band-member'),
+  resource,
+  action
+from (
+  values
+    ('studio', 'view'),
+    ('band', 'view'),
+    ('band', 'edit'),
+    ('band', 'create'),
+    ('band', 'upload'),
+    ('music', 'view'),
+    ('tour', 'view'),
+    ('media', 'view'),
+    ('news', 'view'),
+    ('fan', 'view'),
+    ('fan', 'edit')
+) as perms(resource, action)
 on conflict ("roleId", resource, action) do nothing;
 
 insert into "RolePermission" (id, "roleId", resource, action)

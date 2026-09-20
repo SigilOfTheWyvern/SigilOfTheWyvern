@@ -24,14 +24,17 @@ const developer = user({
   name: "Developer",
   role: { id: "d", name: "Developer", slug: "developer", color: "#000", permissions: [] },
 });
-const editor = user({
-  id: "2",
+const bandMember = user({
+  id: "4",
   role: {
-    id: "e",
-    name: "Editor",
-    slug: "editor",
+    id: "b",
+    name: "Band Member",
+    slug: "band-member",
     color: "#000",
-    permissions: [{ resource: "news", action: "edit" }],
+    permissions: [
+      { resource: "studio", action: "view" },
+      { resource: "band", action: "edit" },
+    ],
   },
 });
 const fan = user({
@@ -43,19 +46,22 @@ const studioResources = RESOURCES.filter((resource) => resource !== "fan");
 const checks = [
   isFounder(founder),
   isFounder(developer),
-  isPrivilegedSlug("band-owner"),
+  !isFounder(bandMember),
+  !isFounder(fan),
+  isPrivilegedSlug("founder"),
+  isPrivilegedSlug("developer"),
+  !isPrivilegedSlug("band-member"),
+  !isPrivilegedSlug("fan"),
+  !isPrivilegedSlug("band-owner"),
   isSiteOwnerId("12ef6288-3691-4d2e-8f86-0102d413aff5"),
   isSiteOwnerId("d5a16ab4-021d-46b4-89c8-67a567dc8623"),
-  isSuperAdminEmail("owner-test@example.com"),
-  isSuperAdminEmail("Owner-Test@example.com"),
   isSiteOwner({ id: "x", email: "owner-test@example.com" }),
-  !isSiteOwnerId("00000000-0000-0000-0000-000000000000"),
-  !isSuperAdminEmail("fan@example.com"),
   canAccessStudio(founder),
   canAccessStudio(developer),
+  canAccessStudio(bandMember),
   !canAccessStudio(fan),
-  hasPermission(editor, "news", "edit"),
-  !hasPermission(editor, "users", "delete"),
+  hasPermission(bandMember, "band", "edit"),
+  !hasPermission(bandMember, "users", "delete"),
   !hasPermission(fan, "studio", "view"),
   hasPermission(fan, "fan", "view"),
   studioNav(founder).length >= 8,
